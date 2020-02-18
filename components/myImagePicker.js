@@ -5,9 +5,9 @@ import {
   Image,
   StyleSheet
 } from 'react-native';
-import ImagePicker from 'react-native-image-picker';
+import ImagePicker from 'expo-image-picker';
 
-const myImagePicker = ({ image, onImagePicked }) => {
+const MyImagePicker = ({ image, onImagePicked }) => {
 
   const [selectedImage, setSelectedImage] = useState();
 
@@ -17,9 +17,10 @@ const myImagePicker = ({ image, onImagePicked }) => {
       setSelectedImage({ uri: image });
     }
   }, [image])
+  
 
   pickImageHandler = () => {
-    ImagePicker.showImagePicker({ title: 'Pick an Image', maxWidth: 800, maxHeight: 600 },
+    ImagePickerIOS.showImagePicker({ title: 'Pick an Image', maxWidth: 800, maxHeight: 600 },
       response => {
         if (response.error) {
           console.log("image error");
@@ -65,4 +66,4 @@ const styles = StyleSheet.create({
   }
 })
 
-export default myImagePicker;
+export default MyImagePicker;

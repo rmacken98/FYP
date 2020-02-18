@@ -9,7 +9,7 @@ import React from 'react';
 import {withFormik} from 'formik';
 import * as yup from 'yup';
 import { addSpot, updateSpot, uploadSpot } from './SkateSpotsApi'
-import myImagePicker from './components/myImagePicker';
+import MyImagePicker from './components/MyImagePicker';
 
 
 const SpotForm = ( props)=> {
@@ -21,10 +21,11 @@ const SpotForm = ( props)=> {
 
 return (
     <View>
-         <myImagePicker image={props.spot.image} onImagePicked={setSpotImage} />
+         <MyImagePicker image={props.spot.image} onImagePicked={setSpotImage} />
     <TextInput
     
     placeholder='Spot name'
+   
     onChangeText = {text => { props.setFieldValue('name', text) }}
     />
 
@@ -32,12 +33,13 @@ return (
       <TextInput
     
     placeholder='Longitude'
-    onChangeText = {text => {  props.setLongitude(text) }}
+    value = {props.setLongitude}
+   // onChangeText = {text => {  props.setLongitude(text) }}
     />
     <Text>{props.errors.longitude}</Text>
     <TextInput
     placeholder='Latitiude'
-    onChangeText = {text => { props.setFieldValue('name', text) }}
+    value = {props.setLatitude}
     />
       <Text>{props.errors.latitude}</Text>
      
@@ -74,10 +76,10 @@ export default withFormik({
         values.image= props.spot.image;
         uploadSpot(values, props.onSpotUpdated, {updating: true})
 
-        // updateFood(values, props.onSpotUpdated);
+        
     }
     else {
-        // addSpot(values, props.onSpotAdded)
+     
         uploadSpot(values, props.onSpotAdded, {updating: false})
 
     }

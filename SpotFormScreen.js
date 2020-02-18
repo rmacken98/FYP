@@ -31,26 +31,29 @@ export default class SpotFormScreen extends Component {
     this.props.navigation.popToTop();
   }
 
-  setLongitude = (text) => {
-      text= this.props.navigation.getParam('Longitude').toString()
-    props.setFieldValue('name', text)
-  }
+//   setLongitude = () => {
+//     this.setState({longitude:'20'})
+  
+// }
 
-//   submitSubIngredients = () => {
-//     let ingredient = this.state.currentSubIngredient;
+  
+  onFieldChange = () => value => {
+    value='hello'
+    form.setFieldValue(property, value);
+    form.setFieldTouched(property);
+    form.setFieldError(property, null);
+  };
 
-//     if (ingredient && ingredient.length > 2) {
-//       this.setState(prevState => ({
-//         spot: { ...prevState.spot, subIngredients: [...prevState.spot.subIngredients, ingredient] },
-//       }))
-//     }
-//   }
+
 
   render() {
+    console.log(this.props.navigation.getParam('longitude'))
     return (
       <SpotForm
-      setLongitude={this.setLongitude}
-        
+      setLongitude={this.props.navigation.getParam('longitude').toString()}
+      setLatitude={this.props.navigation.getParam('latitude').toString()}
+      
+      
         spot={this.state.spot}
         onSpotAdded={this.props.navigation.getParam('spotAddedCallback')}
         onSpotUpdated={this.onSpotUpdated}

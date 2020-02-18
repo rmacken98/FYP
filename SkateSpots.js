@@ -49,7 +49,7 @@ export default class Skatespots extends React.Component {
             headerLeft: (
                 <Button
                 title='View My Spots'
-                onPress={alert()}/>
+                onPress={console.log('uo')}/>
             ),
 
 
@@ -82,7 +82,7 @@ export default class Skatespots extends React.Component {
     renderModal = (e) =>{
         this.setState({newMarkers: [...this.state.newMarkers, {name:'test',latitude: e.nativeEvent.coordinate.latitude, 
         longitude:  e.nativeEvent.coordinate.longitude}]})
-        this.props.navigation.navigate("SpotForm", {latitude: e.nativeEvent.coordinate.latitude}, {longitude:  e.nativeEvent.coordinate.longitude}
+        this.props.navigation.navigate("SpotFormScreen", {longitude:  e.nativeEvent.coordinate.longitude, latitude:  e.nativeEvent.coordinate.latitude}
             )
        
        
