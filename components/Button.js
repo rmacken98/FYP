@@ -25,7 +25,8 @@ const styles = StyleSheet.create({
         color: 'white',
         fontWeight: '700',
         fontSize: 18,
-    }
+    },
+    
 });
 
 export {Button};

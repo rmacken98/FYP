@@ -14,11 +14,11 @@ class Login extends React.Component {
    
       _SignUp = () => {
         this.props.navigation.navigate('SignUp');
-        console.log("sss");
+       
       };
 
   handleLogin = () => {
-    const { email, password } = this.state;
+    const { email, password } = this
 
     Firebase.auth()
       .signInWithEmailAndPassword(email, password)
@@ -34,6 +34,7 @@ class Login extends React.Component {
 
   render() {
     return (
+     
       <View style={styles.form}>
         <Input
           value={this.state.email}

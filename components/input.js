@@ -10,7 +10,7 @@ const Input = ({label, value, onChangeText, placeholder, secureTextEntry}) => {
             <TextInput
             onChangeText={onChangeText}
             placeholder={placeholder}
-            style={styles.input}
+            style={styles.formInput}
             secureTextEntry={secureTextEntry}
             value={value}
             ></TextInput>
@@ -25,6 +25,7 @@ const styles = StyleSheet.create({
         width: '100%',
         borderColor: '#eee',
         borderBottomWidth: 2,
+        alignItems: 'center'
     },
     label: {
     padding:5,
@@ -43,7 +44,15 @@ const styles = StyleSheet.create({
     ,
     fontWeight: '700',
     width: '100%'
-    }
+    },
+    formInput: {
+        width: 300,
+        height: 50,
+        borderColor: '#B5B4BC',
+        borderWidth: 1,
+        marginBottom: 16,
+        padding: 8
+      },
 });
 
 export {Input};
