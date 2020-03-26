@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import SpotForm from './SpotForm';
 
-export default class SpotFormScreen extends Component {
+export default class SpotFormScreen2 extends Component {
 
   static navigationOptions = ({ navigation }) => {
     return {
@@ -50,7 +50,7 @@ export default class SpotFormScreen extends Component {
       
       
         spot={this.state.spot}
-        onSpotAdded={this.props.navigation.getParam('spotAddedCallback')}
+       
         onSpotUpdated={this.onSpotUpdated}
       />
     );

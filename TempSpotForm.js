@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import SpotForm from './SpotForm';
+import { Input } from './components/input';
 
-export default class SpotFormScreen extends Component {
+export default class TempSpotForm extends Component {
 
   static navigationOptions = ({ navigation }) => {
     return {
@@ -9,9 +10,6 @@ export default class SpotFormScreen extends Component {
     }
   };
 
- 
-
- 
   state = {
     spot: {
       name: '',
@@ -26,11 +24,12 @@ export default class SpotFormScreen extends Component {
     const longitude = this.props.navigation.getParam('longitude');
     const latitude = this.props.navigation.getParam('longitude');
 
-    
-     
+    if (currentSpot) {
       this.setState(prevState => ({ spot: prevState.spot = currentSpot }))
-     
-    
+      this.setState(prevState => ({ spot: prevState.spot = longitude }))
+      this.setState(prevState => ({ spot: prevState.spot = latitude }))
+
+    }
   }
 
   onSpotUpdated = (spot) => {
@@ -43,7 +42,6 @@ export default class SpotFormScreen extends Component {
   render() {
     console.log(this.props.navigation.getParam('longitude'))
     return (
-  
       <SpotForm
       setLongitude={this.state.spot.longitude}
       setLatitude={this.state.spot.latitude}
@@ -53,6 +51,7 @@ export default class SpotFormScreen extends Component {
         onSpotAdded={this.props.navigation.getParam('spotAddedCallback')}
         onSpotUpdated={this.onSpotUpdated}
       />
+   
     );
   }
 }
