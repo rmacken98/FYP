@@ -1,5 +1,5 @@
 import Firebase from "./config/Firebase";
-import uuid4 from  'uuid/v4';
+//import uuid4 from  'uuid/v4';
 
 // export function addSpot (spot, addComplete){
 
@@ -14,9 +14,9 @@ import uuid4 from  'uuid/v4';
 // }
 export function updateSpot(spot, updateComplete) {
   spot.updatedAt = Firebase.firestore.FieldValue.serverTimestamp();
-  console.log("Updating Spot in firebase");
+  console.log("Updating Spot in Firebase");
 
-  firebase.firestore()
+  Firebase.firestore()
     .collection('SkateSpots')
     .doc(spot.id).set(spot)
     .then(() => updateComplete(spot))
@@ -24,7 +24,7 @@ export function updateSpot(spot, updateComplete) {
 }
 
 export function addSpot2(spot , addComplete){
-  firebase.firestore()
+  Firebase.firestore()
   .collection('SkateSpots')
   .add(spot)
   .then((snapshot)=>{
@@ -41,60 +41,87 @@ export  async function getSpots(spotsRetrieved){
   var snapshot = await Firebase.firestore()
     .collection('SkateSpots')
     .get()
-
+  
   snapshot.forEach((doc) => {
     const spot = doc.data();
     spot.id = doc.id;
     Spots.push(spot);
-  });
-
+   
+  })
+ // console.log(Firebase.auth().currentUser.email);
   spotsRetrieved(Spots);
 }
 
 
-export function uploadSpot(spot, onSpotUploaded, {updating}){
+export  async function getMySpots(spotsRetrieved){
+    
+  var Spots = [];
+
+var snapshot = await Firebase.firestore()
+  .collection('SkateSpots')
+  .where('createdBy', '==',Firebase.auth().currentUser.email)
+  .get()
+
+snapshot.forEach((doc) => {
+  const spot = doc.data();
+  spot.id = doc.id;
+  Spots.push(spot);
+ 
+})
+// console.log(Firebase.auth().currentUser.email);
+spotsRetrieved(Spots);
+}
+
+
+export async function uploadSpot(spot, onSpotUploaded, {updating}){
   if (spot.imageUri){
     const fileExtension = spot.imageUri.split('.').pop();
     
-    var uuid = uuid4();
+    var uuid = Math.random();
     const fileName = `%{uuid}.${fileExtension}`;
-    var storageRef =Firebase.storage().ref(`skatespots/images/${fileName}`);
+    const response = await fetch(spot.imageUri)
+    var storageRef =Firebase.storage().ref(`skatespots/${fileName}`);
+  
+   const blobh= await response.blob();
+    storageRef.put(blobh)
+    
+    
+   
+ 
+          storageRef.getDownloadURL()
+            .then((downloadUrl) => {
+              console.log("File available at: " + downloadUrl);
 
-    storageRef.putFile(spot.imageUri)
-    .on(
-      Firebase.storage.TaskEvent.STATE_CHANGED,
-      snapshot =>{
+              spot.image = downloadUrl;
+
+              delete spot.imageUri;
+
+              if (updating) {
+                console.log("Updating....");
+                updateSpot(spot, oSpotUploaded);
+              } else {
+                console.log("adding...");
+                addSpot2(spot, onSpotUploaded);
+              }
+            })
         
+      
+  } else {
+    console.log("Skipping image upload");
 
-        if(snapshot.state === Firebase.storage.TaskState.SUCCESS){
-          console.log('success');
-        }
+    delete spot.imageUri;
 
-      },
-
-      error=> {
-        unsubscribe();
-      },
-
-      ()=> {
-        storageRef.getDownloadURL()
-        .then((downloadUrl) => {
-
-          if(updating){
-            console.log('updating...');
-            updateSpo(spot, onSpotUploaded);
-
-          }else{
-            console.log("adding...");
-            addSpot2(spot,onSpotUploaded);
-          }
-
-        })
+    if (updating) {
+      console.log("Updating....");
+      updateSpot(spot, onSpotUploaded);
+    } else {
+      console.log("adding...");
+      addSpot2(spot, onSpotUploaded);
+    }
+  }
       }
 
       
-    )
  
  
-  }
-}
+  
