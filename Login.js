@@ -2,7 +2,10 @@ import React from "react";
 import {
   View,
   Text,
-  StyleSheet
+  StyleSheet,
+  Image,
+
+  
 } from "react-native";
 import Firebase from "./config/Firebase";
 import { Input } from "./components/input";
@@ -11,14 +14,13 @@ import { Button } from "./components/Button";
 // import { createStackNavigator } from 'react-navigation-stack';
 //import SignUp from './SignUp';
 class Login extends React.Component {
-   
+
       _SignUp = () => {
         this.props.navigation.navigate('SignUp');
-       
       };
 
   handleLogin = () => {
-    const { email, password } = this
+    const { email, password } = this.state;
 
     Firebase.auth()
       .signInWithEmailAndPassword(email, password)
@@ -34,8 +36,11 @@ class Login extends React.Component {
 
   render() {
     return (
-     
-      <View style={styles.form}>
+      
+
+
+      <View style={styles.container}>
+         <Image  style= {styles.imageContainer}source={require('./images/Untitled-8.png')}></Image>
         <Input
           value={this.state.email}
           onChangeText={email => this.setState({ email })}
@@ -55,7 +60,7 @@ class Login extends React.Component {
          onPress={this._SignUp}
         ><Text>Don't have an account yet? Sign up</Text>
         </Button>
-        
+
       </View>
     );
   }
@@ -67,11 +72,15 @@ const styles = StyleSheet.create({
     padding: 20,
     alignItems: "center",
     justifyContent: "center",
-    flexDirection: "row"
+    flexDirection: "column"
   },
   form: {
     flex: 1
-  }
+  },
+  imageContainer: {
+    width: '100%',
+    height: 200
+  },
 });
 
 export default Login;
