@@ -4,9 +4,9 @@ import {
   StyleSheet,
   Text
 } from "react-native";
-import Firebase from "../config/Firebase";
-import { Input } from "../components/input";
-import { Button } from "../components/Button";
+import Firebase from "./config/Firebase";
+import { Input } from "./components/input";
+import { Button } from "./components/Button";
 
 class Signup extends React.Component {
   handleSignUp = () => {
