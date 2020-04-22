@@ -4,18 +4,32 @@ import {
   StyleSheet,
   Text
 } from "react-native";
-import Firebase from "./config/Firebase";
-import { Input } from "./components/input";
-import { Button } from "./components/Button";
+import Firebase from "../config/Firebase";
+import { Input } from "../components/input";
+import { Button } from "../components/Button";
 
 class Signup extends React.Component {
   handleSignUp = () => {
     const { email, password } = this.state;
+    const uuid =Math.random();
+    const user={uuid: uuid, name: this.state.name, email: email}
     Firebase.auth()
       .createUserWithEmailAndPassword(email, password)
+      Firebase.firestore()
+      .collection('Users')
+      .add(user)
+      .then((snapshot)=>{
+        user.id = snapshot.id;
+        snapshot.set(user);
+      })
+    
+    
       .then(() => this.props.navigation.navigate("SkateSpots"))
       .catch(error => console.log(error));
-  };
+  
+      
+  
+    };
   state = {
     name: "",
     email: "",
