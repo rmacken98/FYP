@@ -1,14 +1,8 @@
 import React, { Component } from './node_modules/react';
-import {
-  StyleSheet,
-  View,
-  TextInput,
-  Text,
-} from 'react-native';
-import  EditForm from './EditForm';
-import {Button} from './components/Button';
+import SpotForm from '../SpotForm';
+import { Input } from '../components/input';
 
-export default class SpotFormScreen2 extends Component {
+export default class TempSpotForm extends Component {
 
   static navigationOptions = ({ navigation }) => {
     return {
@@ -16,9 +10,6 @@ export default class SpotFormScreen2 extends Component {
     }
   };
 
- 
-
- 
   state = {
     spot: {
       name: '',
@@ -33,11 +24,12 @@ export default class SpotFormScreen2 extends Component {
     const longitude = this.props.navigation.getParam('longitude');
     const latitude = this.props.navigation.getParam('longitude');
 
-    
-     
+    if (currentSpot) {
       this.setState(prevState => ({ spot: prevState.spot = currentSpot }))
-     
-    
+      this.setState(prevState => ({ spot: prevState.spot = longitude }))
+      this.setState(prevState => ({ spot: prevState.spot = latitude }))
+
+    }
   }
 
   onSpotUpdated = (spot) => {
@@ -48,10 +40,9 @@ export default class SpotFormScreen2 extends Component {
 
 
   render() {
-   
+    console.log(this.props.navigation.getParam('longitude'))
     return (
-  <View>
-      <EditForm
+      <SpotForm
       setLongitude={this.state.spot.longitude}
       setLatitude={this.state.spot.latitude}
       
@@ -59,14 +50,8 @@ export default class SpotFormScreen2 extends Component {
         spot={this.state.spot}
         onSpotAdded={this.props.navigation.getParam('spotAddedCallback')}
         onSpotUpdated={this.onSpotUpdated}
-        // return = {this.props.navigation.navigate('SkateSpots')}
       />
-      <Button
-onPress={() => this.props.navigation.navigate('SkateSpots')}
->
-<Text>Return</Text>
-</Button>
-</View>
+   
     );
   }
 }

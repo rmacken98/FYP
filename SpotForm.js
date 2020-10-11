@@ -3,17 +3,20 @@ import {
   View,
   TextInput,
   Text,
-  Button
 } from 'react-native';
-import React from 'react';
-import {withFormik} from 'formik';
-import * as yup from 'yup';
+import {Button} from './components/Button';
+import React, { Component } from './node_modules/react';
+import {withFormik} from './node_modules/formik';
+import * as yup from './node_modules/yup';
 import { addSpot, updateSpot, uploadSpot } from './SkateSpotsApi'
 import MyImagePicker from './components/MyImagePicker';
 import Firebase from './config/Firebase';
 
 
+
 const SpotForm = ( props)=> {
+
+  
 
     setSpotImage = (image) => {
         props.setFieldValue('imageUri', image.uri);
@@ -24,12 +27,12 @@ const SpotForm = ( props)=> {
  const k = props.setLongitude
  const x = props.setLatitude
  const user = Firebase.auth().currentUser.email
- 
+
 return (
-    <View>
+    <View style={styles.container}>
          <MyImagePicker image={props.spot.image} onImagePicked={setSpotImage}  />
     <TextInput
-    
+    style={styles.formInput}
     placeholder='Spot name'
    
     onChangeText = {text => { props.setFieldValue('name', text);  props.setFieldValue('longitude', k); props.setFieldValue('latitude', x), props.setFieldValue('createdBy',user) }}
@@ -37,14 +40,14 @@ return (
 
     <Text>{props.errors.name}</Text>
       <TextInput
-    
+    style={styles.formInput}
     placeholder='Longitude'
      value =  {`${props.setLongitude}`}
     // onChangeText = {text => { props.setFieldValue('longitude', k) }}
     />
     <Text>{props.errors.longitude}</Text>
     <TextInput
-   
+     style={styles.formInput}
     placeholder='Latitiude'
      value = {`${props.setLatitude}`}
     // onChangeText = {text => { props.setFieldValue('latitude', x) }}
@@ -52,9 +55,12 @@ return (
       <Text>{props.errors.latitude}</Text>
      
 <Button
-title='Submit'
-onPress={() => props.handleSubmit()}
-/>
+onPress={props.handleSubmit}
+>
+<Text>Upload</Text>
+</Button>
+
+
 
     </View>
     
@@ -62,7 +68,41 @@ onPress={() => props.handleSubmit()}
 )
 }
 
-
+const styles = StyleSheet.create({
+  container: {
+      marginTop:10,
+      width: '100%',
+      borderColor: '#eee',
+      borderBottomWidth: 2,
+      alignItems: 'center'
+  },
+  label: {
+  padding:5,
+  paddingBottom:0, 
+  color:'#333',
+  fontSize: 17,
+  fontWeight : '700',
+  width: '100%'
+},
+  input: {
+      paddingRight: 5,
+      paddingLeft : 5,
+      paddingBottom :2,
+      color: '#333',
+      fontSize:18
+  ,
+  fontWeight: '700',
+  width: '100%'
+  },
+  formInput: {
+      width: 300,
+      height: 50,
+      borderColor: '#B5B4BC',
+      borderWidth: 1,
+      marginBottom: 16,
+      padding: 8
+    },
+});
 
 export default withFormik({
     mapPropsToValues: ()=>({name:'',
@@ -87,7 +127,7 @@ export default withFormik({
         values.createdAt = props.spot.createdAt;
         values.image= props.spot.image;
         uploadSpot(values, props.onSpotUpdated, {updating: true})
-        // this.props.navigation.navigate("SkateSpots")
+        
 
         
     }

@@ -5,8 +5,8 @@ import {
   TextInput,
   Text,
 } from 'react-native';
-import  EditForm from './EditForm';
-import {Button} from './components/Button';
+import  EditForm from '../EditForm';
+import {Button} from '../components/Button';
 
 export default class SpotFormScreen2 extends Component {
 
