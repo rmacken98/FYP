@@ -8,30 +8,33 @@ import {
     Button,
     Modal,
     Picker,
-    Alert
+    Alert,
+    TouchableHighlight
     
   } from "react-native";
 
 
-  import Polyline from '@mapbox/polyline';
+  import Polyline from './node_modules/@mapbox/polyline';
 
 
-import React, {useContext} from "react";
+import React, {useContext} from "./node_modules/react";
 import MapView, {PROVIDER_GOOGLE, Marker,Callout} from 'react-native-maps';
-import * as Geolocation from 'expo-location';
-import * as Permissions from 'expo-permissions';
-import Carousel from 'react-native-snap-carousel';
-import {getSpots, getMySpots} from './SkateSpotsApi';
+import * as Geolocation from './node_modules/expo-location';
+import * as Permissions from './node_modules/expo-permissions';
+import Carousel from './node_modules/react-native-snap-carousel';
+import {getSpots, getMySpots,addTime,getTime} from './SkateSpotsApi';
 import Firebase from "./config/Firebase";
-import AwesomeAlert from 'react-native-awesome-alerts';
+import AwesomeAlert from './node_modules/react-native-awesome-alerts';
 import ForecastCard from './components/ForecastCard';
-import {  Card, Divider } from 'react-native-elements';
+import {  Card, Divider, Rating } from './node_modules/react-native-elements';
 import { API_KEY } from './config/WeatherAPIKey';
-
+import {GooglePlacesAutoComplete} from './node_modules/react-native-google-places-autocomplete'
 import { SpotContext } from './SpotProvider';
+import {AirbnbRating} from 'react-native-ratings'
 
-
-import { __await } from "tslib";
+import { __await } from "./node_modules/tslib";
+import { getSupportedVideoFormats } from "./node_modules/expo/build/AR";
+import SearchBar from "./SearchBar";
 
 
 export default class Skatespots extends React.Component {
@@ -48,16 +51,28 @@ export default class Skatespots extends React.Component {
        
 
         return {
-            title: 'Skatespots',
-            headerRight: (
-                <Button
-                title='log out'
-                onPress={handleSignout = () => {
-                    Firebase.auth().signOut()
-                    .then(() => navigation.navigate("Login"))
-                }}
-                />
-            ),
+
+// headerLeft: <Text 
+// //onPress={() =>  this.props.navigation.openDrawer()}
+//   >Menu</Text>,
+
+          drawerLabel: 'Spots',
+          drawerIcon: ({ tintColor }) => (
+            <Image
+              source={require('./images/icons8-skateboard-50.png')}
+              style={[styles.icon, { tintColor: tintColor }]}
+            />
+           )
+          //   title: 'Skatespots',
+          //   headerRight: (
+          //       <Button
+          //       title='log out'
+          //       onPress={handleSignout = () => {
+          //           Firebase.auth().signOut()
+          //           .then(() => navigation.navigate("Login"))
+          //       }}
+          //       />
+          //   ),
             // headerLeft: (
                 
             //     // <Button
@@ -75,9 +90,19 @@ export default class Skatespots extends React.Component {
 
 
     state = {
+      searchLocation:{},
+       Distance:null,
+       User: {
+         name: "",
+         Speed :0.00,
+
+       },
+       Avgspeed:[],
+       counter:0,
+       defaultSpeed:  3.12928,
         Time: 0.0,
-        Speed :0.0,
-        filter:'',
+        locationResult:{}
+,        filter:'',
         markers : [],
         // coordinates: [
         //     {name: 'Cork Street', latitude:53.338161611, longitude: -6.2811350, image: require('./images/corkst.jpg')},
@@ -85,6 +110,8 @@ export default class Skatespots extends React.Component {
         //     {name: '1', latitude:53.355998576, longitude:-6.32166538, image: require('./images/corkst.jpg')},
         //     {name: '2', latitude:53.350140, longitude: -6.5611350,image: require('./images/corkst.jpg')}            
         // ]
+        ovSpeed:0.00,
+        timer:25000,
         coordinates:[],
         newMarkers : [],
         weather : { temperature: 0,
@@ -92,9 +119,59 @@ export default class Skatespots extends React.Component {
             description:null,
             icon:null,
             wind:null},
-            coords:[]
+            coords:[],
+            modalVisible: false
+
         
     }   
+
+    setModalVisible = (visible) => {
+      this.setState({ modalVisible: visible });
+    }
+    getLocationFromName(loc){
+      this.setState({newMarkers: [...this.state.newMarkers, {name:loc.name,latitude:loc.lat, 
+        longitude: loc.lng}]})
+const locations= {
+  latitude:loc.lat,
+  longitude: loc.lng,
+
+}
+        console.log(loc);
+        this._map.animateToRegion({
+          latitude:loc.lat,
+          longitude: loc.lng,
+          latitudeDelta:0.09,
+          longitudeDelta: 0.035
+      })
+      this.setState({searchLocation:loc} );
+      const { modalVisible } = this.state;
+      this.setModalVisible(true);
+
+      // Alert.alert(
+      //   'Alert Title',
+      //   'Alert',
+      //   [
+      //     {text: 'Add Spot', onPress: () => this.props.navigation.navigate("SpotFormScreen", {spot: {name:loc.name,longitude:  loc.lng, latitude:  loc.lat}
+      //     ,longitude:  loc.longitude, latitude:  loc.latitude})
+      //   },
+      //       {
+      //           text: 'Get directions',
+      //           onPress: () => this.onMarkerPressed(locations,0),
+               
+      //         },
+
+      //         {
+      //           text: 'Cancel',
+               
+      //           style: 'cancel',
+      //         },
+        
+          
+      //   ],
+      //   {cancelable: false},
+      // );
+      
+    }
     
   
     renderModal = (e) =>{
@@ -130,23 +207,33 @@ export default class Skatespots extends React.Component {
         this.props.navigation.popToTop();
       }
     
-
-
+      onSpotsRecieved = (coordinates)=>{
+        // console.log(coordinates);
+          this.setState(prevState => ({
+              coordinates: prevState.coordinates = coordinates
+          }));
+          // this would be
+          //  spot.setCoordinates([coordinatess])
+      }
+   
      
-    onSpotsRecieved = (coordinates)=>{
+    onTimeRecieved = (Avgspeed)=>{
       // console.log(coordinates);
         this.setState(prevState => ({
-            coordinates: prevState.coordinates = coordinates
+            Avgspeed: prevState.Avgspeed = Avgspeed
         }));
         // this would be
         //  spot.setCoordinates([coordinatess])
     }
 
     componentDidMount() {
-      setInterval( this._getLocationAsync(), 30000)
+      this._getLocationAsync();
+      setInterval(this._getLocationAsync.bind(this),this.state.timer)
+    
 
        
         getSpots(this.onSpotsRecieved)
+        getTime(this.onTimeRecieved)
       }
     
       _handleMapRegionChange = mapRegion => {
@@ -169,16 +256,28 @@ export default class Skatespots extends React.Component {
        }
     
        let location = await Geolocation.getCurrentPositionAsync({});
+       console.log(JSON.stringify(location))
        this.setState({ locationResult: JSON.stringify(location) });
+       spped= JSON.stringify(location)
+      // x= spped.coords.speed
     // spot.setLocationResult(JSON.stringify(location))
-    if(location.speed < 3.12928){
-     let speed = location.speed
-     this.setState({Speed: speed});
+   // if(location.speed > 3.12928){
+     let speed = parseFloat(location.coords.speed)
+    
+     this.setState({counter: this.state.counter+1})
+     this.setState({ovSpeed: this.state.ovSpeed+speed})
+     console.log(this.state.ovSpeed)
+     if(this.state.counter==5){
+       let speed2= this.state.ovSpeed/5;
+      this.setState({User:{name: "a@a.com",Speed: speed2}});
+     addTime(this.state.User);
+   // }
     }
-    else{
-      let speed = 3.12928
-      this.setState({Speed: speed});
-    }
+    // else{
+    //   let speed = 3.12928
+    //   this.setState({User:{ name: "a@a.com",Speed: speed}});
+    // }
+
     
      let initialPosition = {
                     
@@ -250,17 +349,22 @@ export default class Skatespots extends React.Component {
 
           renderOptions = (marker,index)=>{
             Alert.alert(
-                'Alert Title',
+                '',
                 'Alert',
                 [
-                    {
-                        text: 'Cancel',
-                        onPress: () => this.onMarkerPressed(marker,index),
-                        style: 'cancel',
-                      },
                   {text: 'Edit Spot', onPress: () => this.props.navigation.navigate("SpotFormScreen2", {spot: {name:marker.name,longitude:  marker.longitude, latitude:  marker.latitude}
                   ,longitude:  marker.longitude, latitude:  marker.latitude})
                 },
+                    {
+                        text: 'Get directions',
+                        onPress: () => this.onMarkerPressed(marker,index),
+                       
+                      },
+                      {
+                        text: 'Cancel',
+                       
+                        style: 'cancel',
+                      },
                 
                   
                 ],
@@ -348,12 +452,42 @@ export default class Skatespots extends React.Component {
                       longitude : point[1]
                   }
               })
-              let time = (distance/this.state.Speed)/60
+              this.setState({Distance:respJson.routes[0].legs[0].distance.text})
+              let defspeed = this.state.defaultSpeed
+             // for( i =0; i<this.state.Avgspeed.length(); i++){
+                if (this.state.Avgspeed[0].name=== Firebase.auth().currentUser.email){
+             let avgspeed= parseFloat(this.state.Avgspeed[0].Speed)
+            
+              
+            //console.log(avgspeed)
+              if(avgspeed<2){
+                let time = (distance/defspeed)/60
+                let timer = (time*60000)/5
+                console.log(timer)
+              this.setState({timer:timer})
               this.setState({Time: time})
               console.log(time)
               this.setState({coords: coords})
+              // setInterval( this._getLocationAsync(), 30000)
+
 
               return coords
+              }else{
+                let time = (distance/avgspeed)/60
+                let timer = (time*60000)/5
+              this.setState({timer:timer})
+              this.setState({Time: time})
+              console.log(timer)
+              this.setState({coords: coords})
+               
+              // setInterval( this._getLocationAsync(), 30000)
+
+
+              return coords
+              }
+            }
+             
+              
           } catch(error) {
               alert(error)
               return error
@@ -362,7 +496,7 @@ export default class Skatespots extends React.Component {
 
     render(){
         let time;
-
+        const { modalVisible } = this.state;
 		// Create a new date from the passed date time
         var hours = new Date().getHours();
 
@@ -376,16 +510,26 @@ export default class Skatespots extends React.Component {
         // const spot = useContext(SpotContext);
         return(
 
-                
+         
+          <View style={{flex:1}}>
+              {/* <View style={{ flex: 1 }}>
+                    <SearchBar notifyChange={(loc) => this.getLocationFromName(loc)}
+                    />
+                </View> */}
 
 
-            <View style={styles.container}>
 
+ <View style={{ flex:.15 }}>
+                    <SearchBar
+                    notifyChange={(loc) => this.getLocationFromName(loc)}
+                    />
+                </View>
+                <View style={{flex:1}}>
        <MapView
             provider={PROVIDER_GOOGLE}
             ref={map => this._map = map}
             showsUserLocation={true}
-            style={styles.map}
+            style={{ flex: 1 }}
            initialRegion={this.state.initialPosition}
         //    initialRegion={spot.initialPosition}
             onLongPress={this.renderModal}
@@ -398,6 +542,11 @@ export default class Skatespots extends React.Component {
             // }
             
         >
+         
+
+          <View><Text> Distance to destination: {this.state.Distance}</Text>
+          <Text> Estimated Journey time : {this.state.Time} minutes</Text>
+          </View>
           
           
           <View>
@@ -409,8 +558,8 @@ export default class Skatespots extends React.Component {
 
                          
                          >
-  <Picker.Item label="My Spots" value=" My Spots" />
-  <Picker.Item label="All Spots" value="All Spots" />
+  <Picker.Item label="All Spots" value=" My Spots" />
+  <Picker.Item label="My Spots" value="All Spots" />
 </Picker>
             {/* <Button title='View My Spots'
             style= {styles.forcard}
@@ -422,6 +571,43 @@ export default class Skatespots extends React.Component {
             onPress={()=> getSpots(this.onSpotsRecieved)}>
             </Button> */}
              {/* </View> */} 
+             <View>
+      <Modal
+      
+      animationType="slide"
+      transparent={true}
+      visible={modalVisible}
+      onRequestClose={() => {
+        Alert.alert("Modal has been closed.");
+      }}>
+ <View>
+            <View >
+            <AirbnbRating
+  count={11}
+  reviews={["Terrible", "Bad", "Meh", "OK", "Good", "Hmm...", "Very Good", "Wow", "Amazing", "Unbelievable", "Jesus"]}
+  defaultRating={11}
+  size={20}
+/>
+{/* 'Alert',
+      //   [
+      //     {text: 'Add Spot',}
+      //     ,longitude:  loc.longitude, latitude:  loc.latitude})
+      //   },
+      //       { */}
+      {/* //           text: 'Get directions',
+      //           onPress: () => this.onMarkerPressed(locations,0),
+               
+      //         }, */}
+              <TouchableHighlight
+                style={{  backgroundColor: "#2196F3" }}
+                onPress= {() => this.props.navigation.navigate("SpotFormScreen", {spot: {name:searchLocation.name,longitude:  searchLocation.lng, latitude:  searchLocation.lat}})}
+              >
+                <Text >Add Spot</Text>
+              </TouchableHighlight>
+            </View>
+          </View>
+        </Modal>
+ </View>
              
         </View>
            {
@@ -455,9 +641,9 @@ export default class Skatespots extends React.Component {
                 title = {marker.name}>
                 {/* <Image style={{width: 46, height: 38}} source={require('./images/icons8-skateboard-50.png')}></Image> */}
                   <Callout 
-                   
+                   //onPress={ this.state.markers[index].hideCallout()}
                   tooltip={true}>
-                  <Card containerStyle={styles.forcard}>
+                  <Card containerStyle={styles.forcard} >
 				<Text style={styles.notes}>{this.state.location}</Text>
 				
 				<View style={{flexDirection:'row', justifyContent:'space-between', alignItems:'center'}}>
@@ -501,7 +687,7 @@ export default class Skatespots extends React.Component {
               
             />
         </View>
-
+        </View>
 
 
         );
@@ -509,6 +695,10 @@ export default class Skatespots extends React.Component {
 }
 
 const styles = StyleSheet.create({
+  search: {
+    position:'absolute'
+  },
+
     container: {
         ...StyleSheet.absoluteFillObject
     },

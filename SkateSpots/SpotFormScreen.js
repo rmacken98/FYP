@@ -5,10 +5,10 @@ import {
   TextInput,
   Text,
 } from 'react-native';
-import  EditForm from './EditForm';
-import {Button} from './components/Button';
+import SpotForm from '../SpotForm';
+import {Button} from '../components/Button';
 
-export default class SpotFormScreen2 extends Component {
+export default class SpotFormScreen extends Component {
 
   static navigationOptions = ({ navigation }) => {
     return {
@@ -34,8 +34,7 @@ export default class SpotFormScreen2 extends Component {
     const latitude = this.props.navigation.getParam('longitude');
 
     
-     
-      this.setState(prevState => ({ spot: prevState.spot = currentSpot }))
+    
      
     
   }
@@ -48,10 +47,10 @@ export default class SpotFormScreen2 extends Component {
 
 
   render() {
-   
+    console.log(this.props.navigation.getParam('longitude'))
     return (
   <View>
-      <EditForm
+      <SpotForm
       setLongitude={this.state.spot.longitude}
       setLatitude={this.state.spot.latitude}
       

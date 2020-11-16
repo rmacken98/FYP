@@ -1,17 +1,19 @@
-import React from './node_modules/react'
-import Login from './SkateSpots/Login'
-import SignUp from './SkateSpots/SignUp'
-import SkateSpots from './SkateSpots/SkateSpots'
-import SpotFormScreen from './SkateSpots/SpotFormScreen';
-import SpotFormScreen2 from './SkateSpots/SpotFormScreen2';
-import MessageScreen from './SkateSpots/MessageScreen';
-import UserList from './SkateSpots/UserList';
-import SpotForm from './SkateSpots/SpotForm';
+import React from 'react'
+import Login from './Login'
+import SignUp from './SignUp'
+import SkateSpots from './SkateSpots'
+import SpotFormScreen from './SpotFormScreen';
+import SpotFormScreen2 from './SpotFormScreen2';
+import MessageScreen from './MessageScreen';
+import UserList from './UserList';
+import SpotList from './SpotList';
+
+import SpotForm from './SpotForm';
 import Firebase from "./config/Firebase";
 // import {createSwitchNavigator} from 'react-navigation-switch'
-import {createDrawerNavigator,DrawerNavigatorItems} from './node_modules/react-navigation-drawer'
-import { createStackNavigator } from './node_modules/react-navigation-stack';
-import { createAppContainer,createSwitchNavigator} from './node_modules/react-navigation';
+import {createDrawerNavigator,DrawerNavigatorItems} from 'react-navigation-drawer'
+import { createStackNavigator } from 'react-navigation-stack';
+import { createAppContainer,createSwitchNavigator} from 'react-navigation';
 import {
   View,
   Text,
@@ -19,7 +21,7 @@ import {
   TouchableOpacity,
   Alert
 } from "react-native";
-import SafeAreaView from './node_modules/react-native-safe-area-view';
+import SafeAreaView from 'react-native-safe-area-view';
 
 const LoginStack = createStackNavigator({
   
@@ -41,6 +43,10 @@ const messageStack = createStackNavigator({
   UserList: UserList,
   MessageScreen: MessageScreen,
 
+})
+
+const spotStack = createStackNavigator({
+  SpotList:SpotList
 })
 
 const AppStack = createStackNavigator({
@@ -68,7 +74,12 @@ const MyDrawerNavigator = createDrawerNavigator(
   },
   Messages: {
     screen: messageStack,
-  }},
+  },
+  SpotList:
+  {
+    screen: spotStack
+  }
+},
   {
     contentComponent:(props) => (
       <View style={{flex:1}}>

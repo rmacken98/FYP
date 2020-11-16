@@ -1,5 +1,12 @@
-import React, { Component } from 'react';
+import React, { Component } from './node_modules/react';
+import {
+  StyleSheet,
+  View,
+  TextInput,
+  Text,
+} from 'react-native';
 import SpotForm from './SpotForm';
+import {Button} from './components/Button';
 
 export default class SpotFormScreen extends Component {
 
@@ -27,8 +34,7 @@ export default class SpotFormScreen extends Component {
     const latitude = this.props.navigation.getParam('longitude');
 
     
-     
-      this.setState(prevState => ({ spot: prevState.spot = currentSpot }))
+    
      
     
   }
@@ -43,7 +49,7 @@ export default class SpotFormScreen extends Component {
   render() {
     console.log(this.props.navigation.getParam('longitude'))
     return (
-  
+  <View>
       <SpotForm
       setLongitude={this.state.spot.longitude}
       setLatitude={this.state.spot.latitude}
@@ -52,7 +58,14 @@ export default class SpotFormScreen extends Component {
         spot={this.state.spot}
         onSpotAdded={this.props.navigation.getParam('spotAddedCallback')}
         onSpotUpdated={this.onSpotUpdated}
+        // return = {this.props.navigation.navigate('SkateSpots')}
       />
+      <Button
+onPress={() => this.props.navigation.navigate('SkateSpots')}
+>
+<Text>Return</Text>
+</Button>
+</View>
     );
   }
 }
