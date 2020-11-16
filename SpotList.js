@@ -97,7 +97,7 @@ class SpotList extends Component {
       </SafeAreaView> :
       <View style={styles.textContainer}>
         <Text style={styles.emptyTitle}>No Spots found</Text>
-        <Text style={styles.emptySubtitle}>Add a new user using the + button below</Text>
+        <Text style={styles.emptySubtitle}></Text>
        
       </View>
   }

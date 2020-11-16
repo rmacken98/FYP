@@ -217,7 +217,7 @@ export async function uploadSpot(spot, onSpotUploaded, {updating}){
     const fileExtension = spot.imageUri.split('.').pop();
     
     var uuid = Math.random();
-    const fileName = `%{uuid}.${fileExtension}`;
+    const fileName = `${uuid}.${fileExtension}`;
     const response = await fetch(spot.imageUri)
     var storageRef =Firebase.storage().ref(`skatespots/${fileName}`);
   

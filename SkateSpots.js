@@ -31,13 +31,13 @@ import { API_KEY } from './config/WeatherAPIKey';
 import {GooglePlacesAutoComplete} from './node_modules/react-native-google-places-autocomplete'
 import { SpotContext } from './SpotProvider';
 import {AirbnbRating} from 'react-native-ratings'
-
+import {connect} from 'react-redux';
 import { __await } from "./node_modules/tslib";
 import { getSupportedVideoFormats } from "./node_modules/expo/build/AR";
 import SearchBar from "./SearchBar";
 
 
-export default class Skatespots extends React.Component {
+class Skatespots extends Component {
   
 //setstate e.nativeEvent.cordinates add it and should diplay a new marker
 
@@ -111,7 +111,7 @@ export default class Skatespots extends React.Component {
         //     {name: '2', latitude:53.350140, longitude: -6.5611350,image: require('./images/corkst.jpg')}            
         // ]
         ovSpeed:0.00,
-        timer:25000,
+        // timer:25000,
         coordinates:[],
         newMarkers : [],
         weather : { temperature: 0,
@@ -136,7 +136,7 @@ const locations= {
   longitude: loc.lng,
 
 }
-        console.log(loc);
+        // console.log(loc);
         this._map.animateToRegion({
           latitude:loc.lat,
           longitude: loc.lng,
@@ -177,15 +177,26 @@ const locations= {
     renderModal = (e) =>{
         // const spot = useContext(SpotContext);
 
-        this.setState({newMarkers: [...this.state.newMarkers, {name:'test',latitude: e.nativeEvent.coordinate.latitude, 
+        this.setState({newMarkers: [...this.state.newMarkers, {name:'',latitude: e.nativeEvent.coordinate.latitude, 
         longitude:  e.nativeEvent.coordinate.longitude}]})
+
+
+        //With redux
+// store.dispatch({
+//   type : "markerAdded"
+//  payload: {
+  // latitude: e.nativeEvent.coordinate.latitude, 
+  //       longitude:  e.nativeEvent.coordinate.longitude
+// }
+// })
+
 
 
         //with this it would be
     //     spot.setNewMarkers([...NewMarkers,{name:'test',latitude:  e.nativeEvent.coordinate.latitude, 
     //    longitude:  e.nativeEvent.coordinate.longitude}])
 
-
+// set an id also possibly then in spot form get
 
         this.props.navigation.navigate("SpotFormScreen", {spot: {name:'',longitude:  e.nativeEvent.coordinate.longitude, latitude:  e.nativeEvent.coordinate.latitude},longitude:  e.nativeEvent.coordinate.longitude, latitude:  e.nativeEvent.coordinate.latitude}
             )
@@ -228,7 +239,7 @@ const locations= {
 
     componentDidMount() {
       this._getLocationAsync();
-      setInterval(this._getLocationAsync.bind(this),this.state.timer)
+      // setInterval(this._getLocationAsync.bind(this),this.state.timer)
     
 
        
@@ -256,7 +267,7 @@ const locations= {
        }
     
        let location = await Geolocation.getCurrentPositionAsync({});
-       console.log(JSON.stringify(location))
+      //  console.log(JSON.stringify(location))
        this.setState({ locationResult: JSON.stringify(location) });
        spped= JSON.stringify(location)
       // x= spped.coords.speed
@@ -269,7 +280,7 @@ const locations= {
      console.log(this.state.ovSpeed)
      if(this.state.counter==5){
        let speed2= this.state.ovSpeed/5;
-      this.setState({User:{name: "a@a.com",Speed: speed2}});
+      this.setState({User:{name: Firebase.auth().currentUser.email,Speed: speed2}});
      addTime(this.state.User);
    // }
     }
@@ -437,13 +448,12 @@ const locations= {
         }
 
 
-
         async getDirections(startLoc, destinationLoc) {
           try {
               let resp = await fetch(`https://maps.googleapis.com/maps/api/directions/json?origin=${startLoc}&destination=${ destinationLoc }&key=AIzaSyCOVmY_-JN6AY1x5a80rXwTHgLXWtUdf5E`)
             
-              let respJson = await resp.json();
-              console.log(respJson.routes[0].legs[0].distance)
+              let respJson = await resp.json()
+              console.log(respJson)
               let distance=respJson.routes[0].legs[0].distance.value
               let points = Polyline.decode(respJson.routes[0].overview_polyline.points);
               let coords = points.map((point, index) => {
@@ -584,7 +594,7 @@ const locations= {
             <View >
             <AirbnbRating
   count={11}
-  reviews={["Terrible", "Bad", "Meh", "OK", "Good", "Hmm...", "Very Good", "Wow", "Amazing", "Unbelievable", "Jesus"]}
+  reviews={["Terrible", "Bad", "Meh", "OK", "Good", "Hmm...", "Very Good", "Wow", "Amazing", "Unbelievable", "s"]}
   defaultRating={11}
   size={20}
 />
@@ -694,6 +704,13 @@ const locations= {
 }
 }
 
+const mapPropsToState = (state) =>{
+  return{
+    markers: state.spotReducer.markers
+  }
+}
+// const mapDispatchToProps = (state) =>{}
+
 const styles = StyleSheet.create({
   search: {
     position:'absolute'
@@ -754,3 +771,4 @@ const styles = StyleSheet.create({
         flexDirection: "row"
       },
   });
+  export default connect(mapStateToProps)(Skatespots);

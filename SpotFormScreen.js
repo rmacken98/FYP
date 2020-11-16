@@ -30,8 +30,8 @@ export default class SpotFormScreen extends Component {
 
   componentDidMount() {
     const currentSpot = this.props.navigation.getParam('spot');
-    const longitude = this.props.navigation.getParam('longitude');
-    const latitude = this.props.navigation.getParam('longitude');
+    // const longitude = this.props.navigation.getParam('longitude');
+    // const latitude = this.props.navigation.getParam('latitude');
 
     
     
@@ -51,8 +51,8 @@ export default class SpotFormScreen extends Component {
     return (
   <View>
       <SpotForm
-      setLongitude={this.state.spot.longitude}
-      setLatitude={this.state.spot.latitude}
+      setLongitude={this.props.navigation.getParam('longitude')}
+      setLatitude={this.props.navigation.getParam('latitude')}
       
       
         spot={this.state.spot}
