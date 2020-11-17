@@ -35,7 +35,8 @@ import {connect} from 'react-redux';
 import { __await } from "./node_modules/tslib";
 import { getSupportedVideoFormats } from "./node_modules/expo/build/AR";
 import SearchBar from "./SearchBar";
-
+import store from "./store";
+import { addSpot, locationResult, set_MapRegion, set_Permission, set_Weather } from "./actions/actions";
 
 class Skatespots extends Component {
   
@@ -91,36 +92,30 @@ class Skatespots extends Component {
 
     state = {
       searchLocation:{},
-       Distance:null,
-       User: {
-         name: "",
-         Speed :0.00,
+      //  Distance:null,
+      //  User: {
+      //    name: "",
+      //    Speed :0.00,
 
-       },
-       Avgspeed:[],
-       counter:0,
+      //  },
+      //  Avgspeed:[],
+      //  counter:0,
        defaultSpeed:  3.12928,
-        Time: 0.0,
-        locationResult:{}
-,        filter:'',
-        markers : [],
-        // coordinates: [
-        //     {name: 'Cork Street', latitude:53.338161611, longitude: -6.2811350, image: require('./images/corkst.jpg')},
-        //     {name: 'Fair View', latitude:53.3633889, longitude: -6.233694444444445, image: require('./images/fairview.jpg')},
-        //     {name: '1', latitude:53.355998576, longitude:-6.32166538, image: require('./images/corkst.jpg')},
-        //     {name: '2', latitude:53.350140, longitude: -6.5611350,image: require('./images/corkst.jpg')}            
-        // ]
-        ovSpeed:0.00,
-        // timer:25000,
-        coordinates:[],
-        newMarkers : [],
-        weather : { temperature: 0,
-            weatherCondition: null,
-            description:null,
-            icon:null,
-            wind:null},
-            coords:[],
-            modalVisible: false
+        // Time: 0.0,
+//         locationResult:{}
+         filter:'',
+//         markers : [],
+   
+        // ovSpeed:0.00,
+        // coordinates:[],
+        // newMarkers : [],
+        // weather : { temperature: 0,
+        //     weatherCondition: null,
+        //     description:null,
+        //     icon:null,
+        //     wind:null},
+        //     coords:[],
+        //     modalVisible: false
 
         
     }   
@@ -147,29 +142,6 @@ const locations= {
       const { modalVisible } = this.state;
       this.setModalVisible(true);
 
-      // Alert.alert(
-      //   'Alert Title',
-      //   'Alert',
-      //   [
-      //     {text: 'Add Spot', onPress: () => this.props.navigation.navigate("SpotFormScreen", {spot: {name:loc.name,longitude:  loc.lng, latitude:  loc.lat}
-      //     ,longitude:  loc.longitude, latitude:  loc.latitude})
-      //   },
-      //       {
-      //           text: 'Get directions',
-      //           onPress: () => this.onMarkerPressed(locations,0),
-               
-      //         },
-
-      //         {
-      //           text: 'Cancel',
-               
-      //           style: 'cancel',
-      //         },
-        
-          
-      //   ],
-      //   {cancelable: false},
-      // );
       
     }
     
@@ -177,20 +149,11 @@ const locations= {
     renderModal = (e) =>{
         // const spot = useContext(SpotContext);
 
-        this.setState({newMarkers: [...this.state.newMarkers, {name:'',latitude: e.nativeEvent.coordinate.latitude, 
-        longitude:  e.nativeEvent.coordinate.longitude}]})
-
-
-        //With redux
-// store.dispatch({
-//   type : "markerAdded"
-//  payload: {
-  // latitude: e.nativeEvent.coordinate.latitude, 
-  //       longitude:  e.nativeEvent.coordinate.longitude
-// }
-// })
-
-
+        // this.setState({newMarkers: [...this.state.newMarkers, {name:'',latitude: e.nativeEvent.coordinate.latitude, 
+        // longitude:  e.nativeEvent.coordinate.longitude}]})
+      let spot = {name:'',latitude: e.nativeEvent.coordinate.latitude, 
+       longitude:  e.nativeEvent.coordinate.longitude};
+       store.dispatch(addSpot(spot))
 
         //with this it would be
     //     spot.setNewMarkers([...NewMarkers,{name:'test',latitude:  e.nativeEvent.coordinate.latitude, 
@@ -220,36 +183,38 @@ const locations= {
     
       onSpotsRecieved = (coordinates)=>{
         // console.log(coordinates);
-          this.setState(prevState => ({
-              coordinates: prevState.coordinates = coordinates
-          }));
+          // this.setState(prevState => ({
+          //     coordinates: prevState.coordinates = coordinates
+          // }));
           // this would be
           //  spot.setCoordinates([coordinatess])
+          store.dispatch(addSpot(coordinates))
+
+
       }
    
      
-    onTimeRecieved = (Avgspeed)=>{
-      // console.log(coordinates);
-        this.setState(prevState => ({
-            Avgspeed: prevState.Avgspeed = Avgspeed
-        }));
-        // this would be
-        //  spot.setCoordinates([coordinatess])
-    }
+    // onTimeRecieved = (Avgspeed)=>{
+    //   // console.log(coordinates);
+    //     this.setState(prevState => ({
+    //         Avgspeed: prevState.Avgspeed = Avgspeed
+    //     }));
+    //     // this would be
+    //     //  spot.setCoordinates([coordinatess])
+    // }
 
     componentDidMount() {
       this._getLocationAsync();
       // setInterval(this._getLocationAsync.bind(this),this.state.timer)
-    
 
-       
         getSpots(this.onSpotsRecieved)
-        getTime(this.onTimeRecieved)
+        // getTime(this.onTimeRecieved)
       }
     
       _handleMapRegionChange = mapRegion => {
         // console.log(mapRegion);
-        this.setState({ mapRegion });
+       // this.setState({ mapRegion });
+       store.dispatch(set_MapRegion(mapRegion));
       };
     
       _getLocationAsync = async () => {
@@ -257,33 +222,36 @@ const locations= {
 
        let { status } = await Permissions.askAsync(Permissions.LOCATION);
        if (status !== 'granted') {
-         this.setState({
-           locationResult: 'Permission to access location was denied',
-         });
-        // spot.setLocationResult( 'Permission to access location was denied',)
+        //  this.setState({
+        //    locationResult: 'Permission to access location was denied',
+        //  });
+        store.dispatch(locationResult("Permission to access location was denied"))
+
        } else {
-         this.setState({ hasLocationPermissions: true });
+        //  this.setState({ hasLocationPermissions: true });
         // spot.sethasLocationPermissions(true);
+        store.dispatch(set_Permission(true))
        }
     
        let location = await Geolocation.getCurrentPositionAsync({});
       //  console.log(JSON.stringify(location))
-       this.setState({ locationResult: JSON.stringify(location) });
-       spped= JSON.stringify(location)
-      // x= spped.coords.speed
+     //  this.setState({ locationResult: JSON.stringify(location) });
+     store.dispatch(locationResult(JSON.stringify(location)))
+       
+    
     // spot.setLocationResult(JSON.stringify(location))
    // if(location.speed > 3.12928){
-     let speed = parseFloat(location.coords.speed)
+  //    let speed = parseFloat(location.coords.speed)
     
-     this.setState({counter: this.state.counter+1})
-     this.setState({ovSpeed: this.state.ovSpeed+speed})
-     console.log(this.state.ovSpeed)
-     if(this.state.counter==5){
-       let speed2= this.state.ovSpeed/5;
-      this.setState({User:{name: Firebase.auth().currentUser.email,Speed: speed2}});
-     addTime(this.state.User);
-   // }
-    }
+  //    this.setState({counter: this.state.counter+1})
+  //    this.setState({ovSpeed: this.state.ovSpeed+speed})
+  //    console.log(this.state.ovSpeed)
+  //    if(this.state.counter==5){
+  //      let speed2= this.state.ovSpeed/5;
+  //     this.setState({User:{name: Firebase.auth().currentUser.email,Speed: speed2}});
+  //    addTime(this.state.User);
+  //  // }
+  //   }
     // else{
     //   let speed = 3.12928
     //   this.setState({User:{ name: "a@a.com",Speed: speed}});
@@ -300,22 +268,26 @@ const locations= {
                 this.fetchWeather(location.coords.latitude,location.longitude)
                 
     //   spot.setInitialPosition({initialPosition})
-       this.setState({initialPosition});
+     //  this.setState({initialPosition});
+     store.dispatch(initialPosition(initialPosition));
       };
     
       onMapPress= e => {
-          this.setState({
-              markers: [
-                  ...this.state.markers,
-                  {
-                    longitude : e.nativeEvent.coordinate.longitude,
-                    latitude : e.nativeEvent.coordinate.latitude
+          // this.setState({
+          //     markers: [
+          //         ...this.state.markers,
+          //         {
+          //           longitude : e.nativeEvent.coordinate.longitude,
+          //           latitude : e.nativeEvent.coordinate.latitude
 
-                  }
+          //         }
                  
-              ]
+          //     ]
               
-          })
+          // })
+        let spot = {longitude : e.nativeEvent.coordinate.longitude,
+                     latitude : e.nativeEvent.coordinate.latitude}
+          store.dispatch(addSpot(spot));
 
         // const spot = useContext(SpotContext);
 
@@ -333,7 +305,7 @@ const locations= {
 
 
 
-      fetchWeather(lat = 25, lon = 25) {
+      fetchWeather(lat, lon) {
         // const spot = useContext(SpotContext);
 
         fetch(
@@ -349,13 +321,25 @@ const locations= {
             //     icon: json.weather[0].icon,
             //     wind: json.wind.speed
             //   }})
-            this.setState({weather: {
-              temperature: json.main.temp,
-              weatherCondition: json.weather[0].main,
-              description: json.weather[0].description,
-              icon: json.weather[0].icon,
-              wind: json.wind.speed
-            }});
+            // this.setState({weather: {
+            //   temperature: json.main.temp,
+            //   weatherCondition: json.weather[0].main,
+            //   description: json.weather[0].description,
+            //   icon: json.weather[0].icon,
+            //   wind: json.wind.speed
+            // }});
+           let weather = {
+                  temperature: json.main.temp,
+                  weatherCondition: json.weather[0].main,
+                  description: json.weather[0].description,
+                  icon: json.weather[0].icon,
+                  wind: json.wind.speed
+              
+            }
+
+            store.dispatch(set_Weather(weather))
+
+            
           })}
 
           renderOptions = (marker,index)=>{
@@ -386,6 +370,7 @@ const locations= {
 
           filter = (itemValue, itemIndex) =>{
             this.setState({filter: itemValue});
+            // store.dispatch(filter(itemValue))
         
         if(this.state.filter==="All Spots"){
             getSpots(this.onSpotsRecieved);
@@ -704,7 +689,7 @@ const locations= {
 }
 }
 
-const mapPropsToState = (state) =>{
+const mapStateToProps = (state) =>{
   return{
     markers: state.spotReducer.markers
   }
