@@ -5,11 +5,12 @@ import {
     Text,
   } from 'react-native';
   import {Button} from './components/Button';
-  import React, { Component } from './node_modules/react';
-  import {withFormik} from './node_modules/formik';
+  import React from './node_modules/react';
+  import { Component } from './node_modules/react';
+    import {withFormik} from './node_modules/formik';
   import * as yup from './node_modules/yup';
   import { addSpot, updateSpot, uploadSpot } from './SkateSpotsApi'
-  import MyImagePicker from './components/MyImagePicker';
+  import MyImagePicker from './components/myImagePicker';
   import Firebase from './config/Firebase';
   
   
