@@ -3,7 +3,6 @@
     "name": "Skatespots",
     "slug": "skatespots",
     "privacy": "public",
-    "sdkVersion": "39.0.0",
     "platforms": [
       "ios",
       "android",
@@ -34,6 +33,7 @@
           "apiKey": "AIzaSyA5E5wGHggxuqoLZ7eEcxtnTFnGGucpwkE"
         }
       }
-    }
+    },
+    "description": ""
   }
 }

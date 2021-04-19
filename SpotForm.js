@@ -14,6 +14,7 @@ import MyImagePicker from './components/myImagePicker';
 
 
 
+
 const SpotForm = ( props)=> {
 
   
