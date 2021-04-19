@@ -7,8 +7,7 @@ import SpotFormScreen2 from './SpotFormScreen2';
 import MessageScreen from './MessageScreen';
 import UserList from './UserList';
 import SpotList from './SpotList';
-import {Provider} from 'react-redux';
-import configureStore from './store';
+import Sensors from './Sensors';
 import SpotForm from './SpotForm';
 import Firebase from "./config/Firebase";
 // import {createSwitchNavigator} from 'react-navigation-switch'
@@ -18,7 +17,6 @@ import { createAppContainer,createSwitchNavigator} from 'react-navigation';
 import {
   View,
   Text,
-  StyleSheet,
   TouchableOpacity,
   Alert
 } from "react-native";
@@ -49,7 +47,9 @@ const messageStack = createStackNavigator({
 const spotStack = createStackNavigator({
   SpotList:SpotList
 })
-
+const dataStack = createStackNavigator({
+  Sensors:Sensors
+})
 const AppStack = createStackNavigator({
   
  
@@ -61,7 +61,7 @@ const AppStack = createStackNavigator({
    // SpotFormScreen2: SpotFormScreen2,
     SpotForm: SpotForm
   ,
-  // SpotFormScreen2: SpotFormScreen2,
+ 
 
   
     
@@ -79,6 +79,9 @@ const MyDrawerNavigator = createDrawerNavigator(
   SpotList:
   {
     screen: spotStack
+  },
+  Data: {
+    screen: dataStack
   }
 },
   {
@@ -115,9 +118,7 @@ const MyDrawerNavigator = createDrawerNavigator(
 
 
 const AppNavigator = createSwitchNavigator(
-  
   {
-  
     App: MyDrawerNavigator,
     Auth: {
       screen: LoginStack,
@@ -132,4 +133,4 @@ const AppNavigator = createSwitchNavigator(
 
 
 
-export default createAppContainer(<Provider store= {configureStore}><AppNavigator/></Provider>);
+export default createAppContainer(AppNavigator);

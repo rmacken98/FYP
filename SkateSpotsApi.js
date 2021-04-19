@@ -19,6 +19,45 @@ export function addReview(review){
 
 }
 
+export async function getTricks(tricksRetrieved,UserID,tricktype){
+  var Tricks = [];
+
+  var snapshot = await Firebase.firestore()
+    .collection('Tricks')
+  .where('userID', '==',UserID).where('trickType','==',tricktype)
+
+    .get()
+    
+  
+  snapshot.forEach((doc) => {
+    const trick = doc.data();
+    trick.id = doc.id;
+    Tricks.push(trick);
+   
+  })
+ // console.log(Firebase.auth().currentUser.email);
+  tricksRetrieved(Tricks);
+
+}
+
+export const sendTrickData = tricks =>{
+  let time;
+  var hours = new Date().getHours();
+  var minutes = new Date().getMinutes();
+  time = hours + ':' + minutes;
+  tricks.forEach(item => {
+    const trick = {
+      text: item.text,
+      timestamp: time,
+      user: item.user
+    };
+   Firebase.firestore().collection('tricks').add(tricks);
+
+  })
+}
+
+
+
 export const send  =messages => {
   let time;
 
@@ -217,7 +256,7 @@ export async function uploadSpot(spot, onSpotUploaded, {updating}){
     const fileExtension = spot.imageUri.split('.').pop();
     
     var uuid = Math.random();
-    const fileName = `${uuid}.${fileExtension}`;
+    const fileName =  `${uuid}.${fileExtension}`
     const response = await fetch(spot.imageUri)
     var storageRef =Firebase.storage().ref(`skatespots/${fileName}`);
   
@@ -259,8 +298,3 @@ export async function uploadSpot(spot, onSpotUploaded, {updating}){
     }
   }
       }
-
-      
- 
- 
-  

@@ -12,13 +12,11 @@ import {
     TouchableHighlight
     
   } from "react-native";
-
-
   import Polyline from './node_modules/@mapbox/polyline';
-
-
-import React, {useContext} from "./node_modules/react";
-import MapView, {PROVIDER_GOOGLE, Marker,Callout} from 'react-native-maps';
+import React from "./node_modules/react";
+import {useContext} from 'react';
+import MapView  from 'react-native-maps';
+import {PROVIDER_GOOGLE, Marker,Callout} from 'react-native-maps';
 import * as Geolocation from './node_modules/expo-location';
 import * as Permissions from './node_modules/expo-permissions';
 import Carousel from './node_modules/react-native-snap-carousel';
@@ -33,12 +31,11 @@ import { SpotContext } from './SpotProvider';
 import {AirbnbRating} from 'react-native-ratings'
 import {connect} from 'react-redux';
 import { __await } from "./node_modules/tslib";
-import { getSupportedVideoFormats } from "./node_modules/expo/build/AR";
 import SearchBar from "./SearchBar";
-import store from "./store";
+
 import { addSpot, locationResult, set_MapRegion, set_Permission, set_Weather } from "./actions/actions";
 
-class Skatespots extends Component {
+class Skatespots extends React.Component {
   
 //setstate e.nativeEvent.cordinates add it and should diplay a new marker
 
@@ -92,30 +89,30 @@ class Skatespots extends Component {
 
     state = {
       searchLocation:{},
-      //  Distance:null,
-      //  User: {
-      //    name: "",
-      //    Speed :0.00,
+       Distance:null,
+       User: {
+         name: "",
+         Speed :0.00,
 
-      //  },
-      //  Avgspeed:[],
-      //  counter:0,
+       },
+       Avgspeed:[],
+       counter:0,
        defaultSpeed:  3.12928,
-        // Time: 0.0,
-//         locationResult:{}
+        Time: 0.0,
+        locationResult:{},
          filter:'',
-//         markers : [],
+        markers : [],
    
-        // ovSpeed:0.00,
-        // coordinates:[],
-        // newMarkers : [],
-        // weather : { temperature: 0,
-        //     weatherCondition: null,
-        //     description:null,
-        //     icon:null,
-        //     wind:null},
-        //     coords:[],
-        //     modalVisible: false
+        ovSpeed:0.00,
+        coordinates:[],
+        newMarkers : [],
+        weather : { temperature: 0,
+            weatherCondition: null,
+            description:null,
+            icon:null,
+            wind:null},
+            coords:[],
+            modalVisible: false
 
         
     }   
@@ -147,13 +144,12 @@ const locations= {
     
   
     renderModal = (e) =>{
-        // const spot = useContext(SpotContext);
 
-        // this.setState({newMarkers: [...this.state.newMarkers, {name:'',latitude: e.nativeEvent.coordinate.latitude, 
-        // longitude:  e.nativeEvent.coordinate.longitude}]})
-      let spot = {name:'',latitude: e.nativeEvent.coordinate.latitude, 
-       longitude:  e.nativeEvent.coordinate.longitude};
-       store.dispatch(addSpot(spot))
+        this.setState({newMarkers: [...this.state.newMarkers, {name:'',latitude: e.nativeEvent.coordinate.latitude, 
+        longitude:  e.nativeEvent.coordinate.longitude}]})
+      // let spot = {name:'',latitude: e.nativeEvent.coordinate.latitude, 
+      //  longitude:  e.nativeEvent.coordinate.longitude};
+      //  store.dispatch(addSpot(spot))
 
         //with this it would be
     //     spot.setNewMarkers([...NewMarkers,{name:'test',latitude:  e.nativeEvent.coordinate.latitude, 
@@ -183,38 +179,40 @@ const locations= {
     
       onSpotsRecieved = (coordinates)=>{
         // console.log(coordinates);
-          // this.setState(prevState => ({
-          //     coordinates: prevState.coordinates = coordinates
-          // }));
+          this.setState(prevState => ({
+              coordinates: prevState.coordinates = coordinates
+          }));
           // this would be
           //  spot.setCoordinates([coordinatess])
-          store.dispatch(addSpot(coordinates))
+          // console.log(coordinates)
+          // store.dispatch(addSpot(coordinates))
+       
 
 
       }
    
      
-    // onTimeRecieved = (Avgspeed)=>{
-    //   // console.log(coordinates);
-    //     this.setState(prevState => ({
-    //         Avgspeed: prevState.Avgspeed = Avgspeed
-    //     }));
-    //     // this would be
-    //     //  spot.setCoordinates([coordinatess])
-    // }
+    onTimeRecieved = (Avgspeed)=>{
+      // console.log(coordinates);
+        this.setState(prevState => ({
+            Avgspeed: prevState.Avgspeed = Avgspeed
+        }));
+        // this would be
+        //  spot.setCoordinates([coordinatess])
+    }
 
     componentDidMount() {
       this._getLocationAsync();
       // setInterval(this._getLocationAsync.bind(this),this.state.timer)
 
         getSpots(this.onSpotsRecieved)
-        // getTime(this.onTimeRecieved)
+        getTime(this.onTimeRecieved)
       }
     
       _handleMapRegionChange = mapRegion => {
         // console.log(mapRegion);
-       // this.setState({ mapRegion });
-       store.dispatch(set_MapRegion(mapRegion));
+       this.setState({ mapRegion });
+      //  store.dispatch(set_MapRegion(mapRegion));
       };
     
       _getLocationAsync = async () => {
@@ -222,21 +220,21 @@ const locations= {
 
        let { status } = await Permissions.askAsync(Permissions.LOCATION);
        if (status !== 'granted') {
-        //  this.setState({
-        //    locationResult: 'Permission to access location was denied',
-        //  });
-        store.dispatch(locationResult("Permission to access location was denied"))
+         this.setState({
+           locationResult: 'Permission to access location was denied',
+         });
+        // store.dispatch(locationResult("Permission to access location was denied"))
 
        } else {
-        //  this.setState({ hasLocationPermissions: true });
+         this.setState({ hasLocationPermissions: true });
         // spot.sethasLocationPermissions(true);
-        store.dispatch(set_Permission(true))
+        // store.dispatch(set_Permission(true))
        }
     
        let location = await Geolocation.getCurrentPositionAsync({});
       //  console.log(JSON.stringify(location))
-     //  this.setState({ locationResult: JSON.stringify(location) });
-     store.dispatch(locationResult(JSON.stringify(location)))
+      this.setState({ locationResult: JSON.stringify(location) });
+    //  store.dispatch(locationResult(JSON.stringify(location)))
        
     
     // spot.setLocationResult(JSON.stringify(location))
@@ -268,26 +266,26 @@ const locations= {
                 this.fetchWeather(location.coords.latitude,location.longitude)
                 
     //   spot.setInitialPosition({initialPosition})
-     //  this.setState({initialPosition});
-     store.dispatch(initialPosition(initialPosition));
+      this.setState({initialPosition});
+    //  store.dispatch(initialPosition(initialPosition));
       };
     
       onMapPress= e => {
-          // this.setState({
-          //     markers: [
-          //         ...this.state.markers,
-          //         {
-          //           longitude : e.nativeEvent.coordinate.longitude,
-          //           latitude : e.nativeEvent.coordinate.latitude
+          this.setState({
+              markers: [
+                  ...this.state.markers,
+                  {
+                    longitude : e.nativeEvent.coordinate.longitude,
+                    latitude : e.nativeEvent.coordinate.latitude
 
-          //         }
+                  }
                  
-          //     ]
+              ]
               
-          // })
-        let spot = {longitude : e.nativeEvent.coordinate.longitude,
-                     latitude : e.nativeEvent.coordinate.latitude}
-          store.dispatch(addSpot(spot));
+          })
+        // let spot = {longitude : e.nativeEvent.coordinate.longitude,
+        //              latitude : e.nativeEvent.coordinate.latitude}
+          // store.dispatch(addSpot(spot));
 
         // const spot = useContext(SpotContext);
 
@@ -321,23 +319,23 @@ const locations= {
             //     icon: json.weather[0].icon,
             //     wind: json.wind.speed
             //   }})
-            // this.setState({weather: {
-            //   temperature: json.main.temp,
-            //   weatherCondition: json.weather[0].main,
-            //   description: json.weather[0].description,
-            //   icon: json.weather[0].icon,
-            //   wind: json.wind.speed
-            // }});
-           let weather = {
-                  temperature: json.main.temp,
-                  weatherCondition: json.weather[0].main,
-                  description: json.weather[0].description,
-                  icon: json.weather[0].icon,
-                  wind: json.wind.speed
+            this.setState({weather: {
+              temperature: json.main.temp,
+              weatherCondition: json.weather[0].main,
+              description: json.weather[0].description,
+              icon: json.weather[0].icon,
+              wind: json.wind.speed
+            }});
+          //  let weather = {
+          //         temperature: json.main.temp,
+          //         weatherCondition: json.weather[0].main,
+          //         description: json.weather[0].description,
+          //         icon: json.weather[0].icon,
+          //         wind: json.wind.speed
               
-            }
+          //   }
 
-            store.dispatch(set_Weather(weather))
+          //   store.dispatch(set_Weather(weather))
 
             
           })}
@@ -514,11 +512,11 @@ const locations= {
 
 
 
- <View style={{ flex:.15 }}>
+ {/* <View style={{ flex:.15 }}>
                     <SearchBar
                     notifyChange={(loc) => this.getLocationFromName(loc)}
                     />
-                </View>
+                </View> */}
                 <View style={{flex:1}}>
        <MapView
             provider={PROVIDER_GOOGLE}
@@ -577,12 +575,12 @@ const locations= {
       }}>
  <View>
             <View >
-            <AirbnbRating
+            {/* <AirbnbRating
   count={11}
-  reviews={["Terrible", "Bad", "Meh", "OK", "Good", "Hmm...", "Very Good", "Wow", "Amazing", "Unbelievable", "s"]}
+ // reviews={["Terrible", "Bad", "Meh", "OK", "Good", "Hmm...", "Very Good", "Wow", "Amazing", "Unbelievable", "s"]}
   defaultRating={11}
   size={20}
-/>
+/> */}
 {/* 'Alert',
       //   [
       //     {text: 'Add Spot',}
@@ -689,12 +687,7 @@ const locations= {
 }
 }
 
-const mapStateToProps = (state) =>{
-  return{
-    markers: state.spotReducer.markers
-  }
-}
-// const mapDispatchToProps = (state) =>{}
+
 
 const styles = StyleSheet.create({
   search: {
@@ -756,4 +749,4 @@ const styles = StyleSheet.create({
         flexDirection: "row"
       },
   });
-  export default connect(mapStateToProps)(Skatespots);
+  export default Skatespots;
