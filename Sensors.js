@@ -21,6 +21,7 @@ import {
   } from 'expo-sensors';
 import {Col, Grid, Row } from 'react-native-easy-grid';
 import {PieChart} from 'react-native-chart-kit';
+import { TouchableHighlight, TouchableOpacity } from 'react-native-gesture-handler';
 class Sensors extends Component {
   
   static navigationOptions = ({ navigation }) => {
@@ -146,16 +147,16 @@ class Sensors extends Component {
       this.setState({filter: itemValue});
       // store.dispatch(filter(itemValue))
   
-  if(this.state.filter==="Ollie"){
+  if(itemValue==="Ollie"){
     this.setData(this.state.Olliedata);
      // getTricks(this.onTricksRecieved,"Ollie");
   }
-  else if(this.state.filter==="Kickflip") {
+  else if(itemValue==="Kickflip") {
       //getTricks(this.onTricksRecieved, "Kickflip");
       this.setData(this.state.Kickflipdata);
 
   }
-  else if(this.state.filter==="Heelflip") {
+  else if(itemValue==="Heelflip") {
    // getTricks(this.onTricksRecieved, "Heelflip");
    this.setData(this.state.Heelflipdata);
 
@@ -183,7 +184,7 @@ class Sensors extends Component {
     
 
 detectTrick= async () =>{
-DeviceMotion.setUpdateInterval(5000)
+DeviceMotion.setUpdateInterval(1000)
 // console.log(this.state.DeviceData);
  var ySpeed = this.state.DeviceData.acceleration.y;
  var xSpeed = this.state.DeviceData.acceleration.x;
@@ -218,35 +219,36 @@ this.setState(prevState => ({
 
 
 
-  if (ySpeed>10 && xSpeed>5){
-    // await this.sleep(2000); 
+  if (ySpeed>3 || ySpeed<-3){
+     await this.sleep(1000); 
     // speed = this.state.DeviceData.acceleration.x;
-    // if(xSpeed<speed){
+     if(xSpeed>0.5){
     this.setState(prevState => ({
       trickAttempt: prevState.trickAttempt+1,
         trickCount: prevState.trickCount+1,
         streak: prevState.streak+1
       }));
       await this.sleep(3000);
-    }//}
-    else if(ySpeed>10 && xSpeed<0.4){
+      console.log("Can now attempt a trick");
+    }
+    else  if (ySpeed>3 || ySpeed<-3){
+      await this.sleep(1000);
+      if(xSpeed>0.5){ 
       this.setState(prevState => ({
           trickAttempt: prevState.trickAttempt+1
+
         }));
         await this.sleep(3000);
-  
+        console.log("Can now attempt a trick");
     }
-  if (ySpeed>10 && xSpeed<0.4){
-    // this.setState({ landed: false });
-    this.setState({ streak: 0 });
-    
+  }
+
 
   }
-  // Maybe only count as landed if x speed with is anything greater .5  of what it was before the y axis increase in speed or if is a max of .5 slower
+
+
  
-
-
-      // this.setState({ landed: true });
+  // Maybe only count as landed if x speed with is anything greater .5  of what it was before the y axis increase in speed or if is a max of .5 slower
     
   
 }
@@ -291,16 +293,7 @@ componentDidMount() {
 
 
 
-// renderCarouselItem = ({item}) => 
-      
-// <View style= {styles.cardContainer}
-// >
 
-//     <Text style={styles.cardTitle}>{item.name}
-//     </Text>
-//     {/* <Image style={styles.cardImage} source={{uri: item.image}}
-//    /> */}
-// </View>
 
 
 
@@ -310,18 +303,6 @@ componentDidMount() {
       <View style={styles.containerStyle}>
       <ScrollView style={styles.containerStyle} >
 
-      {/* <View style={styles.textContainerStyle}>
-      <Text>Attempts: {this.state.trickAttempt}</Text>
-          <Text></Text>
-      </View>
-
-      <View style={styles.textContainerStyle}>
-      
-          <Text> Lands : {this.state.trickCount}</Text>
-          <Text></Text>ddd
-      </View> */}
-      {/* <Button onPress={this.Fast()}>
-          <Text>Start</Text></Button> */}
 
 
           
@@ -332,6 +313,7 @@ componentDidMount() {
 
 <Row style={{ height: 240,  justifyContent: 'center' }}>
   
+
 <Picker
                  selectedValue={this.state.filter}
                      style={{ height: 50, width: 150 }}
@@ -369,18 +351,6 @@ componentDidMount() {
 <Text> Streak : {this.state.streak}</Text></Col>
     </Row>
 
-
-    {/* <Row style={{height:40,justifyContent: 'center'}}>
-<Text>Goals</Text>
-    </Row>
-    <Row style={{ height: 40 ,justifyContent: 'center'}}>
-    <Col style={{alignItems: 'center'}}>
-      <Text>Daily: 0/25</Text>
-      </Col>
-      <Col style={{alignItems: 'center'}}>
-<Text> Weekly : 0/50</Text></Col>
-    </Row> */}
-   
 
     <Row style={{height:40,justifyContent: 'center'}}>
 <Text>Graph Stats</Text>
