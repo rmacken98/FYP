@@ -24,7 +24,7 @@ import {getSpots, getMySpots,addTime,getTime} from './SkateSpotsApi';
 import Firebase from "./config/Firebase";
 import AwesomeAlert from './node_modules/react-native-awesome-alerts';
 import ForecastCard from './components/ForecastCard';
-import {  Card, Divider, Rating } from './node_modules/react-native-elements';
+import {  Card, Divider, Rating, withTheme } from './node_modules/react-native-elements';
 import { API_KEY } from './config/WeatherAPIKey';
 import {GooglePlacesAutoComplete} from './node_modules/react-native-google-places-autocomplete'
 import { SpotContext } from './SpotProvider';
@@ -147,15 +147,7 @@ const locations= {
 
         this.setState({newMarkers: [...this.state.newMarkers, {name:'',latitude: e.nativeEvent.coordinate.latitude, 
         longitude:  e.nativeEvent.coordinate.longitude}]})
-      // let spot = {name:'',latitude: e.nativeEvent.coordinate.latitude, 
-      //  longitude:  e.nativeEvent.coordinate.longitude};
-      //  store.dispatch(addSpot(spot))
-
-        //with this it would be
-    //     spot.setNewMarkers([...NewMarkers,{name:'test',latitude:  e.nativeEvent.coordinate.latitude, 
-    //    longitude:  e.nativeEvent.coordinate.longitude}])
-
-// set an id also possibly then in spot form get
+    
 
         this.props.navigation.navigate("SpotFormScreen", {spot: {name:'',longitude:  e.nativeEvent.coordinate.longitude, latitude:  e.nativeEvent.coordinate.latitude},longitude:  e.nativeEvent.coordinate.longitude, latitude:  e.nativeEvent.coordinate.latitude}
             )
@@ -169,11 +161,7 @@ const locations= {
             coordinates: [...prevState.coordinates, coordinate]
         }));
 
-        // const spot = useContext(SpotContext);
-
-        // this would be
-        //  spot.setCoordinates([...coordinates,coordinate])
-
+      
         this.props.navigation.popToTop();
       }
     
@@ -354,6 +342,11 @@ const locations= {
                        
                       },
                       {
+                        text: 'Get Weather',
+                        onPress: () =>  this.state.markers[index].showCallout()
+                      },
+
+                      {
                         text: 'Cancel',
                        
                         style: 'cancel',
@@ -370,7 +363,7 @@ const locations= {
             this.setState({filter: itemValue});
             // store.dispatch(filter(itemValue))
         
-        if(this.state.filter==="All Spots"){
+        if(itemValue==="All Spots"){
             getSpots(this.onSpotsRecieved);
         }
         else{
@@ -409,8 +402,7 @@ const locations= {
                 longitudeDelta: 0.035
             })
             this.fetchWeather(location.latitude,location.longitude)
-           this.state.markers[index].showCallout()
-            // spot.markers[index].showCallout()
+          
            
            
         }
@@ -537,9 +529,10 @@ const locations= {
         >
          
 
-          <View><Text> Distance to destination: {this.state.Distance}</Text>
-          <Text> Estimated Journey time : {this.state.Time} minutes</Text>
+          <View style={{alignItems:'center'}}><Text style={styles.distance}> Distance to destination: {this.state.Distance}</Text>
+          <Text style={styles.distance}> Estimated Journey time : {this.state.Time} minutes</Text>
           </View>
+          {/* // seperate to function */}
           
           
           <View>
@@ -551,8 +544,8 @@ const locations= {
 
                          
                          >
-  <Picker.Item label="All Spots" value=" My Spots" />
-  <Picker.Item label="My Spots" value="All Spots" />
+  <Picker.Item label="All Spots" value="All Spots" />
+  <Picker.Item label="My Spots" value="My Spots" />
 </Picker>
             {/* <Button title='View My Spots'
             style= {styles.forcard}
@@ -617,25 +610,26 @@ const locations= {
             ))
         }
         
-        {}
+     
         
         {
             this.state.coordinates.map((marker, index) => (
-                // spot.coordinates.map((marker, index) => (
+              
                 <Marker
                 key= {marker.name}
                ref= {ref => this.state.markers[index] = ref}
-            //   ref= {ref => spot.markers[index] = ref}
+           
                 onPress = {   ()=> this.renderOptions(marker,index)}
-            
+               
+
                 coordinate= {{latitude: marker.latitude, longitude:marker.longitude}}
-                // onLongPress= {()=> this.props.navigation.navigate("Login")}
+              
                
                 title = {marker.name}>
-                {/* <Image style={{width: 46, height: 38}} source={require('./images/icons8-skateboard-50.png')}></Image> */}
+               
                   <Callout 
-                   //onPress={ this.state.markers[index].hideCallout()}
-                  tooltip={true}>
+                   onPress={ () => this.state.markers[index].hideCallout()}
+                                       tooltip={true}>
                   <Card containerStyle={styles.forcard} >
 				<Text style={styles.notes}>{this.state.location}</Text>
 				
@@ -649,11 +643,11 @@ const locations= {
 				<View style={{flexDirection:'row', justifyContent:'space-between'}}>
 					<Text style={styles.notes}>{ this.state.weather.description}</Text>
 					<Text style={styles.notes}>{Math.round(  this.state.weather.temperature * 10) / 10 }&#8451;</Text>
+        
 				</View>
+
 			</Card>
-                    {/* <Card style={styles.forcard}><Text>{this.state.weather.temperature} </Text>
-                    <Text>{this.state.weather.weatherCondition} </Text>
-                    </Card> */}
+                  
                 </Callout >
                 </Marker>
             ))
@@ -741,6 +735,10 @@ const styles = StyleSheet.create({
 		color:'#fff',
 		textTransform:'capitalize'
     },
+    distance:{
+      backgroundColor:"#FFFFFF",
+    },
+
     form: {
         flex: 1,
         padding: 20,
