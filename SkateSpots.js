@@ -329,6 +329,7 @@ const locations= {
           })}
 
           renderOptions = (marker,index)=>{
+            this.state.markers[index].hideCallout();
             Alert.alert(
                 '',
                 'Alert',
@@ -392,7 +393,12 @@ const locations= {
         onCarouselItemChange = (index) =>{
         //     const spot = useContext(SpotContext);
         //    let location= spot.coordinates[index]
-
+        if(index >0){
+        this.state.markers[index-1].hideCallout();
+        }
+        else{
+          this.state.markers[index].hideCallout();
+        }
             let location= this.state.coordinates[index];
             // so you would just let this equal to spot.coordinates[index] if i had  const spot from the provider
             this._map.animateToRegion({
@@ -668,7 +674,7 @@ const locations= {
               containerCustomStyle={styles.carousel}
               renderItem={this.renderCarouselItem}
               sliderWidth={Dimensions.get('window').width}
-              itemWidth={300}
+              itemWidth={150}
               removeClippedSubviews={false}
               onSnapToItem={(index) => this.onCarouselItemChange(index)}
               
@@ -697,28 +703,28 @@ const styles = StyleSheet.create({
     carousel:{
       position: 'absolute',
       bottom: 0,
-      marginBottom: 48,
+      marginBottom: 24,
 
     },
     cardContainer:{
         backgroundColor: 'rgba(0, 0,0, 0.6)',
-        height:200,
-        width:300,
-        padding:24,
-        borderRadius: 24
+        height:100,
+        width:150,
+        padding:12,
+        borderRadius: 12
     },
     cardImage: {
-        height: 120,
-        width:300,
+        height: 60,
+        width:150,
         bottom: 0,
         position:'absolute',
-        borderBottomLeftRadius:24,
-        borderBottomRightRadius:24,
+        borderBottomLeftRadius:12,
+        borderBottomRightRadius:12,
 
     },
     cardTitle: {
         color: 'white',
-        fontSize : 22,
+        fontSize : 14,
         alignSelf : 'center'
     },
     forcard:{
