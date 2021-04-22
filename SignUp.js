@@ -2,7 +2,8 @@ import React from "react";
 import {
   View,
   StyleSheet,
-  Text
+  Text,
+  Image
 } from "react-native";
 import Firebase from "./config/Firebase";
 import { Input } from "./components/input";
@@ -22,10 +23,9 @@ class Signup extends React.Component {
         user.id = snapshot.id;
         snapshot.set(user);
       })
-    
-    
+      .catch(error => console.log(error))
       .then(() => this.props.navigation.navigate("SkateSpots"))
-      .catch(error => console.log(error));
+      
   
       
   
@@ -38,21 +38,22 @@ class Signup extends React.Component {
 
   render() {
     return (
-      <View>
+      <View style={styles.container}>
+         <Image  style= {styles.imageContainer}source={require('./images/Untitled-8.png')}></Image>
         <Input
           value={this.state.name}
           onChangeText={name => this.setState({ name })}
           placeholder="Name"
         />
         <Input
-          style={styles.inputBox}
+        
           value={this.state.email}
           onChangeText={email => this.setState({ email })}
           placeholder="Email"
           autoCapitalize="none"
         />
         <Input
-          style={styles.inputBox}
+       
           value={this.state.password}
           onChangeText={password => this.setState({ password })}
           placeholder="Password"
@@ -72,11 +73,15 @@ const styles = StyleSheet.create({
     padding: 20,
     alignItems: "center",
     justifyContent: "center",
-    flexDirection: "row"
+    flexDirection: "column"
   },
   form: {
     flex: 1
-  }
+  },
+  imageContainer: {
+    width: '100%',
+    height: 200
+  },
 });
 
 export default Signup;
