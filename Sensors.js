@@ -12,7 +12,7 @@ import {
   ScrollView, 
   Dimensions
 } from 'react-native';
-import { getTricks} from './SkateSpotsApi';
+import { getTricks,sendTrickData} from './SkateSpotsApi';
 import Firebase from "./config/Firebase";
 import {
     Accelerometer,
@@ -36,8 +36,14 @@ class Sensors extends Component {
   state = {
     screenWidth : Dimensions.get("window").width,
       handRaised: false,
-      DeviceData:[],    
-      accelerometerData:{x: 0, y: 0, z: 0   },
+      DeviceData:[], 
+      currentTrickSession:{
+        trickAttempt:0,
+        trickCount:0,
+        streak:0,
+        fails:0
+      } ,  
+      accelerometerData:{x: 0, y: 0, z: 0 },
       Barometer:{},
       trickAttempt:0,
       trickCount:0,
@@ -109,11 +115,93 @@ class Sensors extends Component {
           legendFontSize: 15
         }
       ],
-      data:[]
+      data:[],
+      datas:[
+        
+ { 
+  TrickType:"Heelflip",
+  Date:"25/12/22",
+ Landed:24,
+   Attempted:50},
+
+   {
+     TrickType:"KickFlip",
+     Date:"25/12/22",
+    Landed:14,
+      Attempted:50},
+      ],
+      graph:[],
+      dates:[
+        {
+          date:"05/04/21",
+          
+          HeelflipLands: 5,
+          Heelflipattempts:32
+          
+        }
+      ],
+      session:{}
+    }
+  //   TrickType:"Heelflip",
+  //   Date:"25/12/22",
+  //  Landed:24,
+  //    Attempted:50},
+ 
+  //    {
+  //      TrickType:"KickFlip",
+  //      Date:"25/12/22",
+  //     Landed:24,
+  //       Attempted:50},
+  // const arr = new Array();
+
+  // for (const [key, value] of Object.entries(data)) {
+  //   if(value.TrickType==="Tricktype" && value.date==Date){
+  //   arr.push({x:"Attemped",y:value.Attempted});
+  //   arr.push({x:"Landed",y:value.Landed});
+
+  // }}
+
+
+
+    // for (const [key, value] of Object.entries(data)) {
+    //   if(value.TrickType==="Heelflip"){
+    //   arr.push({x:value.Attempted,y:value.Landed});
+    // }}
+    
+
+
+    renderDatePickers = (data)=>{
+    
+        <Picker
+    
+    
+    selectedValue={this.state.selected}
+    onValueChange={  (itemValue, itemIndex) =>{
+
+      
+
+    }}>
+    {data.map((item, index) => {
+        return (<Picker.Item label={item.date} value={item.date} key={index}/>) 
+    })}
+</Picker>
+      
     }
 
+    setGraph= (trickType, date)=>{
+
+this.setState({graph:[]});
+
+for (const [key, value] of Object.entries(data)) {
+    if(value.TrickType===trickType && value.date==date){
+    this.state.graph.push({x:"Attemped",y:value.Attempted});
+    this.state.graph.push({x:"Landed",y:value.Landed});
+
+  }}
+}
     
-  
+
+
       sleep =(ms) =>{
       return new Promise(resolve => setTimeout(resolve, ms));
     }
@@ -150,15 +238,16 @@ class Sensors extends Component {
   if(itemValue==="Ollie"){
     this.setData(this.state.Olliedata);
      // getTricks(this.onTricksRecieved,"Ollie");
+    //  this.setGraph(itemValue);
   }
   else if(itemValue==="Kickflip") {
       //getTricks(this.onTricksRecieved, "Kickflip");
-      this.setData(this.state.Kickflipdata);
-
+       this.setData(this.state.Kickflipdata);
+      // this.setGraph(itemValue);
   }
   else if(itemValue==="Heelflip") {
    // getTricks(this.onTricksRecieved, "Heelflip");
-   this.setData(this.state.Heelflipdata);
+    this.setData(this.state.Heelflipdata);
 
 }
 }
@@ -184,7 +273,10 @@ class Sensors extends Component {
     
 
 detectTrick= async () =>{
+
+  //if this.state.started=== true
 DeviceMotion.setUpdateInterval(1000)
+await this.sleep(3000);
 // console.log(this.state.DeviceData);
  var ySpeed = this.state.DeviceData.acceleration.y;
  var xSpeed = this.state.DeviceData.acceleration.x;
@@ -202,7 +294,7 @@ var roll = Math.atan2(-this.state.DeviceData.rotation.gamma, -this.state.DeviceD
 let flightTime = Math.sqrt(Math.pow(xSpeed,2)+ Math.pow(ySpeed,2) + Math.pow(zSpeed,2)) 
 console.log(xSpeed)
 // var alt =this.state.Barometer.relativeAltitude;
-if(ySpeed>3 || ySpeed<-3){
+if(ySpeed>2 || ySpeed<-2){
 console.log('------------------------');
  console.log('Yaw: ' + yaw + "degrees");
 console.log('y:' + ySpeed.toFixed(3));
@@ -219,32 +311,31 @@ this.setState(prevState => ({
 
 
 
-  if (ySpeed>3 || ySpeed<-3){
-     await this.sleep(1000); 
-    // speed = this.state.DeviceData.acceleration.x;
-     if(xSpeed>0.5){
+  
+  if (ySpeed>2 || ySpeed*-1>2){
+    await this.sleep(2000); 
+    console.log("X after 2s Second :",xSpeed);
+   // speed = this.state.DeviceData.acceleration.x;
+    if(xSpeed>0.7 || xSpeed*1>0.7){
+   this.setState(prevState => ({
+     trickAttempt: prevState.trickAttempt+1,
+       trickCount: prevState.trickCount+1,
+       streak: prevState.streak+1
+     }));
+     await this.sleep(3000);
+     console.log("Can now attempt a trick");
+   }
+   else if (xSpeed<0.7 || xSpeed*-1<0.7){ 
     this.setState(prevState => ({
-      trickAttempt: prevState.trickAttempt+1,
-        trickCount: prevState.trickCount+1,
-        streak: prevState.streak+1
+        trickAttempt: prevState.trickAttempt+1,
+        streak:0
       }));
       await this.sleep(3000);
       console.log("Can now attempt a trick");
-    }
-    else  if (ySpeed>3 || ySpeed<-3){
-      await this.sleep(1000);
-      if(xSpeed>0.5){ 
-      this.setState(prevState => ({
-          trickAttempt: prevState.trickAttempt+1
-
-        }));
-        await this.sleep(3000);
-        console.log("Can now attempt a trick");
-    }
   }
 
+   }
 
-  }
 
 
  
@@ -306,6 +397,13 @@ componentDidMount() {
 
 
           
+    
+     
+        
+    
+
+  
+
       <Grid>
       <Row style={{ height: 40,  justifyContent: 'center' }}>
         
@@ -374,12 +472,14 @@ componentDidMount() {
 
 const styles = StyleSheet.create({
   container: {
-    flex:1,
-    alignItems: 'center',
-    justifyContent: 'center',
-   height:1200,
+    flex: 1,
+    padding: 20,
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "column",
     backgroundColor: '#ecf0f1',
   },
+
     header:{
         
      
