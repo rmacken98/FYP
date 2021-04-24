@@ -3,9 +3,9 @@ import {
     Text,
     Image,
     StyleSheet,
-    Platform,
+   
     Dimensions,
-    Button,
+    
     Modal,
     Picker,
     Alert,
@@ -14,7 +14,6 @@ import {
   } from "react-native";
   import Polyline from './node_modules/@mapbox/polyline';
 import React from "./node_modules/react";
-import {useContext} from 'react';
 import MapView  from 'react-native-maps';
 import {PROVIDER_GOOGLE, Marker,Callout} from 'react-native-maps';
 import * as Geolocation from './node_modules/expo-location';
@@ -61,23 +60,7 @@ class Skatespots extends React.Component {
               style={[styles.icon, { tintColor: tintColor }]}
             />
            )
-          //   title: 'Skatespots',
-          //   headerRight: (
-          //       <Button
-          //       title='log out'
-          //       onPress={handleSignout = () => {
-          //           Firebase.auth().signOut()
-          //           .then(() => navigation.navigate("Login"))
-          //       }}
-          //       />
-          //   ),
-            // headerLeft: (
-                
-            //     // <Button
-            //     // title='View My Spots'
-            //     // onPress={console.log('jjj')}/>
-            // ),
-
+         
 
            
 
@@ -97,8 +80,9 @@ class Skatespots extends React.Component {
        },
        Avgspeed:[],
        counter:0,
-       defaultSpeed:  3.12928,
+       defaultSpeed: 4.3362,
         Time: 0.0,
+        speedLoc:{},
         locationResult:{},
          filter:'',
         markers : [],
@@ -112,7 +96,8 @@ class Skatespots extends React.Component {
             icon:null,
             wind:null},
             coords:[],
-            modalVisible: false
+            modalVisible: false,
+            interval:0
 
         
     }   
@@ -142,6 +127,24 @@ const locations= {
       
     }
     
+
+
+
+    updateAverageSpeed= async ()=>{
+      let location = await Geolocation.getCurrentPositionAsync({});
+        console.log(JSON.stringify(location))
+      this.setState({ speedLoc: JSON.stringify(location) });
+    console.log(speedLoc)
+      this.setState(prevState => ({
+        SpeedCounter: prevState.SpeedCounter+1,
+        CurrentSpeed: location.Speed
+        }));
+        this.setState(prevState => ({
+        TotalSpeed: prevState.TotalSpeed+ this.state.CurrentSpeed
+          }));
+       
+    
+    }
   
     renderModal = (e) =>{
 
@@ -459,8 +462,21 @@ const locations= {
               this.setState({Time: time})
               console.log(time)
               this.setState({coords: coords})
-              // setInterval( this._getLocationAsync(), 30000)
+            
+              this.setState({
+                interval: setInterval(this.updateAverageSpeed, timer)
+              });
 
+
+              if (this.state.counter>5){
+                clearInterval(this.state.interval);
+                this.setState({ interval: null });
+                const total = this.state.TotalSpeed;
+                this.setState(prevState => ({
+                 NewAverageSpeed: total/5
+                  }));
+              //Send Speed to DATABASE
+              }
 
               return coords
               }else{
@@ -472,7 +488,20 @@ const locations= {
               this.setState({coords: coords})
                
               // setInterval( this._getLocationAsync(), 30000)
+              this.setState({
+                interval: setInterval(this.updateAverageSpeed, timer)
+              });
 
+
+              if (this.state.counter>5){
+                clearInterval(this.state.interval);
+                this.setState({ interval: null });
+                const total = this.state.TotalSpeed;
+                this.setState(prevState => ({
+                 NewAverageSpeed: total/5
+                  }));
+              //Send Speed to DATABASE
+              }
 
               return coords
               }
