@@ -4,7 +4,7 @@ import {
   Text,
   StyleSheet,
   Image,
-
+Alert
   
 } from "react-native";
 import Firebase from "./config/Firebase";
@@ -25,7 +25,14 @@ class Login extends React.Component {
     Firebase.auth()
       .signInWithEmailAndPassword(email, password)
       .then(() => this.props.navigation.navigate("SkateSpots"))
-      .catch(error => console.log(error));
+      .catch(error =>   Alert.alert(
+        "Error",
+        "Text field is empty or Email format is invalid",
+        [
+         
+          { text: "OK", onPress: () => console.log(error) }
+        ]
+      ));
   };
   state = {
     email: "",
