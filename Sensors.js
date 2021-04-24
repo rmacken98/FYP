@@ -2,7 +2,6 @@ import React from 'react';
 import {Component,useState, useEffect ,useCallback} from 'react';
 import {Button} from './components/Button';
 import { WebView } from 'react-native-webview';
-import io from 'socket.io-client';
 import {
   StyleSheet,
   Text,
@@ -19,9 +18,9 @@ import {
   DeviceMotion,
     Gyroscope
   } from 'expo-sensors';
+  import CountdownCircleTimer from 'react-native-countdown-circle-timer';
 import {Col, Grid, Row } from 'react-native-easy-grid';
 import {PieChart} from 'react-native-chart-kit';
-import { TouchableHighlight, TouchableOpacity } from 'react-native-gesture-handler';
 class Sensors extends Component {
   
   static navigationOptions = ({ navigation }) => {
@@ -35,6 +34,7 @@ class Sensors extends Component {
 
   state = {
     screenWidth : Dimensions.get("window").width,
+    start:false,
       handRaised: false,
       DeviceData:[], 
       currentTrickSession:{
@@ -116,6 +116,7 @@ class Sensors extends Component {
         }
       ],
       data:[],
+      started:false,
       datas:[
         
  { 
@@ -274,9 +275,9 @@ for (const [key, value] of Object.entries(data)) {
 
 detectTrick= async () =>{
 
-  //if this.state.started=== true
+  if(this.state.started){
 DeviceMotion.setUpdateInterval(1000)
-await this.sleep(3000);
+
 // console.log(this.state.DeviceData);
  var ySpeed = this.state.DeviceData.acceleration.y;
  var xSpeed = this.state.DeviceData.acceleration.x;
@@ -293,8 +294,10 @@ var roll = Math.atan2(-this.state.DeviceData.rotation.gamma, -this.state.DeviceD
 
 let flightTime = Math.sqrt(Math.pow(xSpeed,2)+ Math.pow(ySpeed,2) + Math.pow(zSpeed,2)) 
 console.log(xSpeed)
+
 // var alt =this.state.Barometer.relativeAltitude;
 if(ySpeed>2 || ySpeed<-2){
+
 console.log('------------------------');
  console.log('Yaw: ' + yaw + "degrees");
 console.log('y:' + ySpeed.toFixed(3));
@@ -312,17 +315,18 @@ this.setState(prevState => ({
 
 
   
-  if (ySpeed>2 || ySpeed*-1>2){
-    await this.sleep(2000); 
+  if (ySpeed>3 || ySpeed*-1>3){
+    DeviceMotion.setUpdateInterval(2000)
     console.log("X after 2s Second :",xSpeed);
    // speed = this.state.DeviceData.acceleration.x;
-    if(xSpeed>0.7 || xSpeed*1>0.7){
-   this.setState(prevState => ({
-     trickAttempt: prevState.trickAttempt+1,
-       trickCount: prevState.trickCount+1,
-       streak: prevState.streak+1
-     }));
-     await this.sleep(3000);
+    if(xSpeed>0.7 || xSpeed*-1>0.7){
+      this.setState(prevState => ({
+        trickAttempt: prevState.trickAttempt+1,
+          trickCount: prevState.trickCount+1,
+          streak: prevState.streak+1
+        }));
+
+     DeviceMotion.setUpdateInterval(3000)
      console.log("Can now attempt a trick");
    }
    else if (xSpeed<0.7 || xSpeed*-1<0.7){ 
@@ -330,14 +334,16 @@ this.setState(prevState => ({
         trickAttempt: prevState.trickAttempt+1,
         streak:0
       }));
-      await this.sleep(3000);
+      DeviceMotion.setUpdateInterval(3000)
+
       console.log("Can now attempt a trick");
   }
 
    }
+   DeviceMotion.setUpdateInterval(1000);
 
 
-
+  } 
  
   // Maybe only count as landed if x speed with is anything greater .5  of what it was before the y axis increase in speed or if is a max of .5 slower
     
@@ -391,7 +397,20 @@ componentDidMount() {
   render() {
 
     return (
-      <View style={styles.containerStyle}>
+      <View style={styles.container}>
+
+
+
+
+          <Button onPress={
+       
+       ()=>{
+        setTimeout(()=> this.setState(
+          { started:true,
+            start:true}
+        ),3000)
+        }} title="Start Session"/>
+    
       <ScrollView style={styles.containerStyle} >
 
 
@@ -399,7 +418,6 @@ componentDidMount() {
           
     
      
-        
     
 
   
@@ -450,15 +468,16 @@ componentDidMount() {
     </Row>
 
 
-    <Row style={{height:40,justifyContent: 'center'}}>
-<Text>Graph Stats</Text>
-    </Row>
+   
       </Grid>
-      <View style={styles.containerStyle}>
+      <Button onPress={()=> this.setState(
+          { started:false})}title="Save Session"/>
+
+      {/* <View style={styles.containerStyle}>
  
  
 <this.MyPieChart></this.MyPieChart>
-  </View>
+  </View> */}
   </ScrollView>
 
   </View>
