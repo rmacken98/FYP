@@ -44,7 +44,9 @@ class Sensors extends Component {
         fails:0
       } ,  
       accelerometerData:{x: 0, y: 0, z: 0 },
+      timerAfter:0,
       Barometer:{},
+      xAccelerationDuring: 0,
       trickAttempt:0,
       trickCount:0,
       flightTime:0.0,
@@ -52,6 +54,7 @@ class Sensors extends Component {
       landed:false,
       streak:0,
       playing:false,
+      wait:false,
       tutorials:["https://www.youtube.com/watch?v=arDVW-aWWys","https://www.youtube.com/watch?v=s-Tw11EZCv4",
       "https://www.youtube.com/watch?v=EZhbRmYHjlI" ],
  
@@ -295,19 +298,19 @@ var roll = Math.atan2(-this.state.DeviceData.rotation.gamma, -this.state.DeviceD
 let flightTime = Math.sqrt(Math.pow(xSpeed,2)+ Math.pow(ySpeed,2) + Math.pow(zSpeed,2)) 
 console.log(xSpeed)
 
-// var alt =this.state.Barometer.relativeAltitude;
-if(ySpeed>2 || ySpeed<-2){
+// // var alt =this.state.Barometer.relativeAltitude;
+// if(ySpeed>2.8 || ySpeed<-2.8){
 
-console.log('------------------------');
- console.log('Yaw: ' + yaw + "degrees");
-console.log('y:' + ySpeed.toFixed(3));
-console.log('x:' + xSpeed.toFixed(3));
-console.log('z:' + zSpeed.toFixed(3));
+// // console.log('------------------------');
+// //  console.log('Yaw: ' + yaw + "degrees");
+// // console.log('y:' + ySpeed.toFixed(3));
+// // console.log('x:' + xSpeed.toFixed(3));
+// // console.log('z:' + zSpeed.toFixed(3));
 
 
-// console.log(alt.toFixed(3));
-console.log('------------------------');
-}
+// // console.log(alt.toFixed(3));
+// console.log('------------------------');
+// }
 this.setState(prevState => ({
     flight: prevState.flightTime = flightTime
   }));
@@ -315,34 +318,26 @@ this.setState(prevState => ({
 
 
   
-  if (ySpeed>3 || ySpeed*-1>3){
-    DeviceMotion.setUpdateInterval(2000)
-    console.log("X after 2s Second :",xSpeed);
-   // speed = this.state.DeviceData.acceleration.x;
-    if(xSpeed>0.7 || xSpeed*-1>0.7){
-      this.setState(prevState => ({
-        trickAttempt: prevState.trickAttempt+1,
-          trickCount: prevState.trickCount+1,
-          streak: prevState.streak+1
-        }));
-
-     DeviceMotion.setUpdateInterval(3000)
-     console.log("Can now attempt a trick");
-   }
-   else if (xSpeed<0.7 || xSpeed*-1<0.7){ 
+  if (ySpeed>2.8 || ySpeed*-1>2.8){
+  
+   
     this.setState(prevState => ({
-        trickAttempt: prevState.trickAttempt+1,
-        streak:0
-      }));
-      DeviceMotion.setUpdateInterval(3000)
+     xAccelerationDuring:xSpeed
+  }))
+// console.log("Speed BEFORE"+this.state.xAccelerationDuring)
+  
+   
+    console.log("1")
+   console.log("2")
+   // speed = this.state.DeviceData.acceleration.x;
+   setTimeout( ()=>this.detectLand(), 2000)
+    
 
-      console.log("Can now attempt a trick");
   }
 
-   }
-   DeviceMotion.setUpdateInterval(1000);
+   
 
-
+  
   } 
  
   // Maybe only count as landed if x speed with is anything greater .5  of what it was before the y axis increase in speed or if is a max of .5 slower
@@ -351,6 +346,58 @@ this.setState(prevState => ({
 }
 
 
+detectLand = () =>{
+  var xSpeed = this.state.DeviceData.acceleration.x;
+  var ySpeed = this.state.DeviceData.acceleration.y;
+  console.log("1")
+  console.log("2")
+  // speed = this.state.DeviceData.acceleration.x;
+  console.log("X BEFORE"+this.state.xAccelerationDuring)
+var percentage = this.state.xAccelerationDuring/100*77;
+var percentageminus= (this.state.xAccelerationDuring/100*77)*-1;
+var xXmINUS = this.state.DeviceData.acceleration.x*-1;
+  console.log("77% of x before : "+percentage);
+  console.log("XXXS : "+ xXmINUS);
+  console.log("X after 2s Second :",xSpeed);
+  if(xSpeed>percentage || xXmINUS >percentageminus)
+  {
+  //if(xSpeed>0.65 || xSpeed*-1>0.65){
+    console.log('------------------------');
+    console.log('Trick has been landed!!!');
+    console.log('------------------------');
+    console.log('y:' + ySpeed.toFixed(3));
+    console.log('x:' + xSpeed.toFixed(3));
+    console.log('------------------------');
+    this.setState(prevState => ({
+      currentTrickSession: {                   
+          ...prevState.currentTrickSession,    
+          trickAttempt: prevState.trickAttempt+1,
+        trickCount: prevState.trickCount+1,
+        streak: prevState.streak+1    
+      }
+  }))
+    
+ 
+
+
+ }
+ else if (xSpeed<percentage|| xSpeed*-1<percentage*-1 )
+ { 
+  console.log('------------------------');
+  console.log('Trick has been Failed!!!');
+  console.log('------------------------');
+  console.log('y:' + ySpeed.toFixed(3));
+  console.log('x:' + xSpeed.toFixed(3));
+  console.log('------------------------');
+  this.setState(prevState => ({
+    currentTrickSession: {                   
+        ...prevState.currentTrickSession,    
+        trickAttempt: prevState.trickAttempt+1,
+      fail: prevState.fails+1,
+      streak: 0    
+    }
+}))
+}}
         
     
 ontTricksRecieved = (data)=>{
