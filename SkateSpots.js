@@ -254,7 +254,6 @@ const locations= {
                         latitudeDelta:0.09,
                         longitudeDelta: 0.035   
                 }
-                this.fetchWeather(location.coords.latitude,location.longitude)
                 
     //   spot.setInitialPosition({initialPosition})
       this.setState({initialPosition});
@@ -505,6 +504,35 @@ const locations= {
 
               return coords
               }
+            }
+            else{
+
+
+              let time = (distance/defspeed)/60
+              let timer = (time*60000)/5
+            this.setState({timer:timer})
+            this.setState({Time: time})
+            console.log(timer)
+            this.setState({coords: coords})
+             
+            // setInterval( this._getLocationAsync(), 30000)
+            this.setState({
+              interval: setInterval(this.updateAverageSpeed, timer)
+            });
+
+
+            if (this.state.counter>5){
+              clearInterval(this.state.interval);
+              this.setState({ interval: null });
+              const total = this.state.TotalSpeed;
+              this.setState(prevState => ({
+               NewAverageSpeed: total/5
+                }));
+            //Send Speed to DATABASE
+            }
+
+
+
             }
              
               
