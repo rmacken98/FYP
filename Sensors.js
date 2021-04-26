@@ -355,28 +355,28 @@ detectLand = () =>{
   console.log("X BEFORE"+this.state.xAccelerationDuring)
 var percentage = this.state.xAccelerationDuring/100*77;
 var percentageminus= (this.state.xAccelerationDuring/100*77)*-1;
-var xXmINUS = this.state.DeviceData.acceleration.x*-1;
+var XAccelerationMinus = this.state.DeviceData.acceleration.x*-1;
   console.log("77% of x before : "+percentage);
-  console.log("XXXS : "+ xXmINUS);
+  
   console.log("X after 2s Second :",xSpeed);
-  if(xSpeed>percentage || xXmINUS >percentageminus)
+  if(xSpeed>percentage || XAccelerationMinus >percentageminus)
   {
   //if(xSpeed>0.65 || xSpeed*-1>0.65){
     console.log('------------------------');
-    console.log('Trick has been landed!!!');
+    console.log('Trick has been landed');
     console.log('------------------------');
     console.log('y:' + ySpeed.toFixed(3));
     console.log('x:' + xSpeed.toFixed(3));
     console.log('------------------------');
-    this.setState(prevState => ({
-      currentTrickSession: {                   
-          ...prevState.currentTrickSession,    
-          trickAttempt: prevState.trickAttempt+1,
+    this.setState(prevState => ({    currentTrickSession: {                   
+      ...prevState.currentTrickSession,
+        trickAttempt: prevState.trickAttempt+1,
         trickCount: prevState.trickCount+1,
         streak: prevState.streak+1    
       }
-  }))
+    }))
     
+
  
 
 
