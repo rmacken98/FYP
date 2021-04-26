@@ -3,7 +3,8 @@ import {
   View,
   StyleSheet,
   Text,
-  Image
+  Image,
+  Picker
 } from "react-native";
 import Firebase from "./config/Firebase";
 import { Input } from "./components/input";
@@ -11,29 +12,49 @@ import { Button } from "./components/Button";
 
 class Signup extends React.Component {
   handleSignUp = () => {
-    const { email, password } = this.state;
-    const uuid =Math.random();
-    const user={uuid: uuid, name: this.state.name, email: email}
+    const { email, password,uuid } = this.state;
+   
     Firebase.auth()
       .createUserWithEmailAndPassword(email, password)
-      Firebase.firestore()
-      .collection('Users')
-      .add(user)
-      .then((snapshot)=>{
-        user.id = snapshot.id;
-        snapshot.set(user);
-      })
-      .catch(error => console.log(error))
+      .then(cred =>{
+
+        this.setState(prevState => ({
+         uuid:cred.user.uid
+        }))
+        console.log(cred.user.uid)
+        const user={uuid:cred.user.uid, name: this.state.name, email: email}
+
+       return Firebase.firestore()
+        .collection('Users')
+        .add(user)
+        .then((snapshot)=>{
+          user.id = snapshot.id;
+          snapshot.set(user);
+        })
+        .catch(error => console.log(error)) 
+        
+      }
+      )
+
+
+
+     
       .then(() => this.props.navigation.navigate("SkateSpots"))
+
+
+
+     
       
   
       
   
     };
   state = {
+    uuid:"",
     name: "",
     email: "",
-    password: ""
+    password: "",
+    location:""
   };
 
   render() {
@@ -59,8 +80,24 @@ class Signup extends React.Component {
           placeholder="Password"
           secureTextEntry={true}
         />
-        <Button onPress={this.handleSignUp}>
-          <Text>Signup</Text>
+
+{/* <Picker
+                 selectedValue={this.state.filter}
+                     style={{ height: 50, width: 150 }}
+                     onValueChange={this.filter}
+                                              
+
+                         
+                         >
+ 
+  <Picker.Item label="Dublin" value="Dublin" />
+  <Picker.Item label="Drogheda" value="Drogheda" />
+  <Picker.Item label="Dundalk" value="Dundalk" /> 
+
+ </Picker> */}
+
+        <Button title="Sign Up"onPress={this.handleSignUp}>
+         
         </Button>
       </View>
     );
