@@ -9,6 +9,7 @@ import UserList from './UserList';
 import SpotList from './SpotList';
 import Sensors from './Sensors';
 import SpotForm from './SpotForm';
+import TrackProgress from './TrickProgress';
 import Firebase from "./config/Firebase";
 // import {createSwitchNavigator} from 'react-navigation-switch'
 import {createDrawerNavigator,DrawerNavigatorItems} from 'react-navigation-drawer'
@@ -50,6 +51,9 @@ const spotStack = createStackNavigator({
 const dataStack = createStackNavigator({
   Sensors:Sensors
 })
+const trackStack= createStackNavigator({
+  TrackProgress:TrackProgress
+})
 const AppStack = createStackNavigator({
   
  
@@ -82,6 +86,9 @@ const MyDrawerNavigator = createDrawerNavigator(
   },
   Data: {
     screen: dataStack
+  },
+  TrackProgress:{
+    screen: trackStack
   }
 },
   {
