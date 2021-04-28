@@ -1,100 +1,60 @@
 import React from "react";
-import { Component, useState, useEffect, useCallback } from "react";
-import { Button } from "./components/Button";
-import { WebView } from "react-native-webview";
+import { Component} from "react";
 import {
-  StyleSheet,
-  Text,
-  View,
-  Alert,
-  Picker,
-  ScrollView,
-  Dimensions,
+  StyleSheet,View,
 } from "react-native";
-import { getTricks, sendTrickData } from "./SkateSpotsApi";
-import Firebase from "./config/Firebase";
+import { getTrick} from "./SkateSpotsApi";
 import DropDownPicker from "react-native-dropdown-picker";
-import { Accelerometer, DeviceMotion, Gyroscope } from "expo-sensors";
-import CountdownCircleTimer from "react-native-countdown-circle-timer";
-import { Col, Grid, Row } from "react-native-easy-grid";
-import { VictoryPie, VictoryChart, VictoryTheme } from "victory-native";
+
+import { VictoryPie} from "victory-native";
+import Firebase from "./config/Firebase";
 class TrickProgress extends Component {
   static navigationOptions = ({ navigation }) => {
     return {};
   };
 
   state = {
-    screenWidth: Dimensions.get("window").width,
     trick: [
       { label: "Ollie", value: "Ollie" },
       { label: "Heelflip", value: "Heelflip" },
       { label: "KickFlip", value: "KickFlip" },
     ],
     Trickdata: [],
-    datas: [
-      {
-        TrickType: "Heelflip",
-        Date: "25/12/22",
-        Landed: 24,
-        Attempted: 50,
-      },
 
-      {
-        TrickType: "KickFlip",
-        Date: "25/12/22",
-        Landed: 14,
-        Attempted: 50,
-      },
-      {
-        TrickType: "KickFlip",
-        Date: "21/12/22",
-        Landed: 17,
-        Attempted: 40,
-      },
-    ],
-
-    chartData: [],
   };
 
-  onTricksRecieved = (tricks) => {
-    this.setState((prevState) => ({
-      tricks: (prevState.data = tricks),
-    }));
-
-    // console.log(messages)
-  };
-
-  ontTricksRecieved = (Trickdata) => {
-    // console.log(coordinates);
-    this.setState((prevState) => ({
-      Trickdata: (prevState.Trickdata = Trickdata),
-    }));
-  };
+  onTricksRecieved = (Trickdata)=>{
+      this.setState(prevState => ({
+        Trickdata: prevState.Trickdata = Trickdata
+      }));
+    }
 
   componentDidMount() {
-    getTricks(this.onTricksRecieved);
+    console.log(Firebase.auth().currentUser.uid);
+    getTricks(this.onTricksRecieved, Firebase.auth().currentUser.uid);
+    console.log(this.state.Trickdata)
   }
 
   render() {
-    const tricks = new Array();
-    for (const [key, value] of Object.entries(this.state.datas)) {
+    const tricksChart = new Array();
+    for (const [key, value] of Object.entries(this.state.Trickdata)) {
       if (
         value.TrickType === this.state.trickSelected &&
         value.Date === this.state.selected
       ) {
-        tricks.push({
-          x: "Failed :" + value.Attempted.toString(),
-          y: value.Attempted,
+        tricksChart.push({
+          x: "Failed :" + value.Fails.toString(),
+          y: value.Fails,
         });
-        tricks.push({
-          x: "Landed :" + value.Landed.toString(),
-          y: value.Landed,
+        tricksChart.push({
+          x: "Landed :" + value.Lands.toString(),
+          y: value.Lands,
         });
       }
     }
 
     const dates = new Array();
-    for (const [key, value] of Object.entries(this.state.datas)) {
+    for (const [key, value] of Object.entries(this.state.Trickdata)) {
       if (value.TrickType === this.state.trickSelected) {
         dates.push({
           label: value.TrickType + " :" + value.Date,
@@ -150,7 +110,7 @@ class TrickProgress extends Component {
         />
 
         <VictoryPie
-          data={tricks}
+          data={tricksChart}
           animate={{ duration: 500 }}
           width={300}
           height={300} // x="Landed" y="Attempted"
