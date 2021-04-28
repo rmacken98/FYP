@@ -14,24 +14,22 @@ import {
   import Firebase from './config/Firebase';
   
   
-  
+
   const EditForm = ( props)=> {
   
-    
-  
-      setSpotImage = (image) => {
-          props.setFieldValue('imageUri', image.uri);
-        }
-      // const spot = Spot context
-      // const k = spot.newMarker.longitude
-      //const x = spot.marker.latitude
+   
+    const setSpotImage = (image) => {
+      props.setFieldValue('imageUri', image.uri);
+    }
+   
    const k = props.setLongitude
    const x = props.setLatitude
    const user = Firebase.auth().currentUser.email
   
   return (
       <View style={styles.container}>
-           <MyImagePicker image={props.spot.image} onImagePicked={setSpotImage}  />
+           <MyImagePicker image={props.spot.image} onImagePicked={setSpotImage}
+        />
       <TextInput
       style={styles.formInput}
       placeholder='Spot name'
@@ -57,8 +55,9 @@ import {
        
   <Button
   onPress={props.handleSubmit}
+  title={"uPLOAD"}
   >
-  <Text>Upload</Text>
+ 
   </Button>
   
   
@@ -134,7 +133,7 @@ import {
       }
       else {
        
-          uploadSpot(values, props.onSpotUpdated, {updating: false})
+          //uploadSpot(values, props.onSpotUpdated, {updating: false})
   
       }
       },

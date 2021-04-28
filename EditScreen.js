@@ -1,4 +1,4 @@
-import React, { Component } from './node_modules/react';
+import React, { Component } from 'react';
 import {
   StyleSheet,
   View,
@@ -8,11 +8,11 @@ import {
 import  EditForm from './EditForm';
 import {Button} from './components/Button';
 
-export default class SpotFormScreen2 extends Component {
+export default class EditScreen extends Component {
 
   static navigationOptions = ({ navigation }) => {
     return {
-      title: navigation.getParam('spot') ? 'Edit Spot' : 'New Spot'
+      title: navigation.getParam('spot') ? 'Edit Spot' : 'Edit Spot'
     }
   };
 
@@ -61,11 +61,7 @@ export default class SpotFormScreen2 extends Component {
         onSpotUpdated={this.onSpotUpdated}
         // return = {this.props.navigation.navigate('SkateSpots')}
       />
-      <Button
-onPress={() => this.props.navigation.navigate('SkateSpots')}
->
-<Text>Return</Text>
-</Button>
+
 </View>
     );
   }
