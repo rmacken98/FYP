@@ -1,30 +1,19 @@
 import Firebase from "./config/Firebase";
-//import uuid4 from  'uuid/v4';
 
-export function addReview(review){
-  // id
-  // - productId
-  // - rating
-  // - date (if needed)
-  // - ip (if needed, e.g. to prevent double rating)
-  // - etc
-  Firebase.firestore()
-  .collection('Reviews')
-  .add(review)
-  .then((snapshot)=>{
-    review.id = snapshot.id;
-    snapshot.set(review);
-  }).then(()=> addComplete(review))
-  
 
+export function deleteSpot(spot, deleteComplete) {
+     Firebase.firestore()
+    .collection('SkateSpots')
+    .doc(spot.id).delete()
+    .then(() => deleteComplete())
+    .catch((error) => console.log(error));
 }
-
-export async function getTricks(tricksRetrieved,UserID,tricktype){
+export async function getTricks(tricksRetrieved,user){
   var Tricks = [];
 
   var snapshot = await Firebase.firestore()
     .collection('Tricks')
-  .where('userID', '==',UserID).where('trickType','==',tricktype)
+  .where('uid', '==',user.toString())
 
     .get()
     
@@ -35,21 +24,27 @@ export async function getTricks(tricksRetrieved,UserID,tricktype){
     Tricks.push(trick);
    
   })
- // console.log(Firebase.auth().currentUser.email);
   tricksRetrieved(Tricks);
 
 }
 
-export const sendTrickData = tricks =>{
-  let time;
-  var hours = new Date().getHours();
-  var minutes = new Date().getMinutes();
-  time = hours + ':' + minutes;
+export const sendTrickData = (tricks) =>{
+  var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+
+  var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+  
+  var dateTime = date+' '+time;
+  
+ 
   tricks.forEach(item => {
     const trick = {
       text: item.text,
-      timestamp: time,
-      user: item.user
+      time: dateTime,
+      user: item.user,
+      tricktype: item.tricktype,
+      landed:item.landed,
+      attempted:item.attempted,
+      streak:item.streak
     };
    Firebase.firestore().collection('tricks').add(tricks);
 
@@ -61,13 +56,8 @@ export const sendTrickData = tricks =>{
 export const send  =messages => {
   let time;
 
-  // Create a new date from the passed date time
       var hours = new Date().getHours();
 
-  // Hours part from the timestamp
-  // var hours = date.getHours();
-  
-  // Minutes part from the timestamp
   var minutes = new Date().getMinutes();
 
   time = hours + ':' + minutes;
@@ -81,34 +71,40 @@ export const send  =messages => {
 
   })
 }
-export function updateSpot(spot, updateComplete) {
- // spot.updatedAt = Firebase.firestore.FieldValue.serverTimestamp();
-  console.log("Updating Spot in Firebase");
-
-  Firebase.firestore()
+export async function updateSpot(spot) {
+  if(spot.image===null){
+  var snapshot = await Firebase.firestore()
+  .collection('SkateSpots')
+  .doc(spot.id).update({
+    name:spot.name
+  })}
+  else{
+    var snapshot = await Firebase.firestore()
     .collection('SkateSpots')
-    .doc(spot.id).set(spot)
-    .then(() => updateComplete(spot))
-    .catch((error) => console.log(error));
+    .doc(spot.id).update({
+      name:spot.name,
+      image:spot.image
+  })}
+
+console.log(spot.name);
+
+
+ 
+}
+export function updateSpeed(speed){
+  Firebase.firestore().collection("Speeds").doc(Firebase.auth().currentUser.uid).update({
+   Speed:speed
+});
 }
 
-export function addTime(userTime){
-  Firebase.firestore()
-  .collection('Speeds')
-  .add(userTime)
-  .then((snapshot)=>{
-    userTime.id = snapshot.id;
-    snapshot.set(userTime);
-  })
 
-}
 export  async function getTime(timeretrieved){
     
   var Speed = [];
 
 var snapshot = await Firebase.firestore()
   .collection('Speeds')
-  .where('name', '==',Firebase.auth().currentUser.email)
+  .where('name', '==',Firebase.auth().currentUser.uid)
   .get()
 
 snapshot.forEach((doc) => {
@@ -117,7 +113,6 @@ snapshot.forEach((doc) => {
   Speed.push(speed);
  
 })
-// console.log(Firebase.auth().currentUser.email);
 timeretrieved(Speed);
 }
 
@@ -132,24 +127,6 @@ export function addSpot2(spot , addComplete){
   .catch((error) => console.log(error));
 }
 
-
-// chatID = () => {
-//   const chatterID = this.props.authUser.uid;
-//   const chateeID = this.chateeUID;
-//   const chatIDpre = [];
-//   chatIDpre.push(chatterID);
-//   chatIDpre.push(chateeID);
-//   chatIDpre.sort();
-//   return chatIDpre.join('_');
-// };
-
-// export const sendChatMessage = (chatID, chat) => {
-//   return db
-//     .collection('messages')
-//     .doc(chatID)
-//     .collection('chats')
-//     .add(chat);
-// };
 
 export async function getMyMessages(messagesRetrieved,chatID){
   var Messages = [];
@@ -167,7 +144,6 @@ export async function getMyMessages(messagesRetrieved,chatID){
     Messages.push( message);
    
   })
- // console.log(Firebase.auth().currentUser.email);
   messagesRetrieved(Messages);
 
 }
@@ -189,7 +165,6 @@ user.id = doc.id;
 Users.push(user);
 
 })
-// console.log(Firebase.auth().currentUser.email);
 usersRetrieved(Users);
 }
 export async function getMessages(messagesRetrieved){
@@ -208,12 +183,10 @@ export async function getMessages(messagesRetrieved){
     Messages.push( message);
    
   })
- // console.log(Firebase.auth().currentUser.email);
   messagesRetrieved(Messages);
 
 }
-export  async function getSpots(spotsRetrieved){
-    
+export  async function getSpots(spotsRetrieved){   
     var Spots = [];
 
   var snapshot = await Firebase.firestore()
@@ -226,7 +199,6 @@ export  async function getSpots(spotsRetrieved){
     Spots.push(spot);
    
   })
- // console.log(Firebase.auth().currentUser.email);
   spotsRetrieved(Spots);
 }
 
@@ -237,7 +209,7 @@ export  async function getMySpots(spotsRetrieved){
 
 var snapshot = await Firebase.firestore()
   .collection('SkateSpots')
-  .where('createdBy', '==',Firebase.auth().currentUser.email)
+  .where('createdBy', '==',Firebase.auth().currentUser.uid)
   .get()
 
 snapshot.forEach((doc) => {
@@ -246,46 +218,36 @@ snapshot.forEach((doc) => {
   Spots.push(spot);
  
 })
-// console.log(Firebase.auth().currentUser.email);
 spotsRetrieved(Spots);
 }
-
-
 export async function uploadSpot(spot, onSpotUploaded, {updating}){
   if (spot.imageUri){
     const fileExtension = spot.imageUri.split('.').pop();
     
     var uuid = Math.random();
-    const fileName =  `${uuid}.${fileExtension}`
+    const fileName =  `${uuid}`
     const response = await fetch(spot.imageUri)
     var storageRef =Firebase.storage().ref(`skatespots/${fileName}`);
   
-   const blobh= await response.blob();
-    storageRef.put(blobh)
-    
-    
-   
- 
-          storageRef.getDownloadURL()
-            .then((downloadUrl) => {
-              console.log("File available at: " + downloadUrl);
+    const blob= await response.blob();
+    storageRef.put(blob).then((snapshot) => {
+    snapshot.ref.getDownloadURL().then((url) => {
 
-              spot.image = downloadUrl;
-
-              delete spot.imageUri;
+    spot.image = url;
+    delete spot.imageUri;
 
               if (updating) {
                 console.log("Updating....");
-                updateSpot(spot, oSpotUploaded);
+                updateSpot(spot, onSpotUploaded);
               } else {
                 console.log("adding...");
                 addSpot2(spot, onSpotUploaded);
               }
-            })
-        
-      
-  } else {
-    console.log("Skipping image upload");
+
+});
+  });
+}
+ else {
 
     delete spot.imageUri;
 
@@ -298,3 +260,5 @@ export async function uploadSpot(spot, onSpotUploaded, {updating}){
     }
   }
       }
+
+
