@@ -1,12 +1,13 @@
+import { Marker } from "react-native-svg";
 import Firebase from "./config/Firebase";
 
 
-export function deleteSpot(spot, deleteComplete) {
-     Firebase.firestore()
-    .collection('SkateSpots')
-    .doc(spot.id).delete()
-    .then(() => deleteComplete())
-    .catch((error) => console.log(error));
+export function deleteSpot(marker) {
+  console.log(marker)
+Firebase.firestore()
+  .collection('SkateSpots')
+  .doc(marker.id).delete()
+  
 }
 export async function getTricks(tricksRetrieved,user){
   var Tricks = [];
@@ -29,27 +30,19 @@ export async function getTricks(tricksRetrieved,user){
 }
 
 export const sendTrickData = (tricks) =>{
-  var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
 
-  var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-  
-  var dateTime = date+' '+time;
-  
  
-  tricks.forEach(item => {
-    const trick = {
-      text: item.text,
-      time: dateTime,
-      user: item.user,
-      tricktype: item.tricktype,
-      landed:item.landed,
-      attempted:item.attempted,
-      streak:item.streak
-    };
-   Firebase.firestore().collection('tricks').add(tricks);
+ 
+    Firebase.firestore()
+    .collection('SkateSpots')
+    .add(tricks)
+    .then((snapshot)=>{
+      tricks.id = snapshot.id;
+      snapshot.set(spot);
+    }).then(()=> addComplete(tricks))
+    .catch((error) => console.log(error));
+  }
 
-  })
-}
 
 
 

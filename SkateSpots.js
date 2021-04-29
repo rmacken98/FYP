@@ -40,10 +40,7 @@ class Skatespots extends React.Component {
     return {
       drawerLabel: "Spots",
       drawerIcon: ({ tintColor }) => (
-        <Image
-          source={require("./images/icons8-skateboard-50.png")}
-          style={[styles.icon, { tintColor: tintColor }]}
-        />
+        <Text>.</Text>
       ),
     };
   };
@@ -297,7 +294,7 @@ class Skatespots extends React.Component {
           },
           {
             text: "Delete Spot",
-            onPress: () => deleteSpot(this.state.markers[index]),
+            onPress: () => {deleteSpot(marker), getSpots(this.onSpotsRecieved)},
           },
 
           {
@@ -383,9 +380,12 @@ class Skatespots extends React.Component {
       });
       this.setState({ Distance: respJson.routes[0].legs[0].distance.text });
       let defspeed = this.state.defaultSpeed;
-      if (this.state.Avgspeed[0].name === Firebase.auth().currentUser.uid) {
+let x = ""
+if(this.state.Avgspeed.length>1){
+  x= this.state.Avgspeed[0].name
+}
+      if (x === Firebase.auth().currentUser.uid) {
         let avgspeed = parseFloat(this.state.Avgspeed[0].Speed);
-
         let time = distance / avgspeed / 60;
         let timer = (time * 60000) / 5;
         console.log(timer);
@@ -414,6 +414,8 @@ class Skatespots extends React.Component {
           return coords;
         }
       } else {
+        
+
         let time = distance / defspeed / 60;
         let timer = (time * 60000) / 5;
         this.setState({ timer: timer });
@@ -474,7 +476,7 @@ class Skatespots extends React.Component {
               </Text>
               <Text style={styles.distance}>
                 {" "}
-                Estimated Journey time : {this.state.Time} minutes
+                Estimated Journey time : {this.state.Time.toFixed(2)} minutes
               </Text>
             </View>
 
