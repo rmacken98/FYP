@@ -3,7 +3,7 @@ import Login from './Login'
 import SignUp from './SignUp'
 import SkateSpots from './SkateSpots'
 import SpotFormScreen from './SpotFormScreen';
-import SpotFormScreen2 from './SpotFormScreen2';
+import EditScreen from './EditScreen';
 import MessageScreen from './MessageScreen';
 import UserList from './UserList';
 import SpotList from './SpotList';
@@ -11,7 +11,6 @@ import Sensors from './Sensors';
 import SpotForm from './SpotForm';
 import TrackProgress from './TrickProgress';
 import Firebase from "./config/Firebase";
-// import {createSwitchNavigator} from 'react-navigation-switch'
 import {createDrawerNavigator,DrawerNavigatorItems} from 'react-navigation-drawer'
 import { createStackNavigator } from 'react-navigation-stack';
 import { createAppContainer,createSwitchNavigator} from 'react-navigation';
@@ -22,6 +21,7 @@ import {
   Alert
 } from "react-native";
 import SafeAreaView from 'react-native-safe-area-view';
+import EditForm from './EditForm';
 
 const LoginStack = createStackNavigator({
   
@@ -29,7 +29,7 @@ const LoginStack = createStackNavigator({
    
    
 //   SpotFormScreen: SpotFormScreen,
-//  SpotFormScreen2: SpotFormScreen2,
+//  EditScreen: EditScreen,
 //   SpotForm: SpotForm
  Login: Login,
  SignUp: SignUp,
@@ -62,8 +62,9 @@ const AppStack = createStackNavigator({
  
   SkateSpots: SkateSpots,
      SpotFormScreen: SpotFormScreen,
-   // SpotFormScreen2: SpotFormScreen2,
-    SpotForm: SpotForm
+   EditScreen: EditScreen,
+    SpotForm: SpotForm,
+    EditForm: EditForm
   ,
  
 
@@ -80,11 +81,8 @@ const MyDrawerNavigator = createDrawerNavigator(
   Messages: {
     screen: messageStack,
   },
-  SpotList:
-  {
-    screen: spotStack
-  },
-  Data: {
+ 
+  RecordTricks: {
     screen: dataStack
   },
   TrackProgress:{
