@@ -9,10 +9,12 @@ import {
 import Firebase from "./config/Firebase";
 import { Input } from "./components/input";
 import { Button } from "./components/Button";
+import DropDownPicker from 'react-native-dropdown-picker';
+import { ScrollView } from "react-native-gesture-handler";
 
 class Signup extends React.Component {
   handleSignUp = () => {
-    const { email, password,uuid } = this.state;
+    const { email, password,uuid, name, city } = this.state;
    
     Firebase.auth()
       .createUserWithEmailAndPassword(email, password)
@@ -22,7 +24,7 @@ class Signup extends React.Component {
          uuid:cred.user.uid
         }))
         console.log(cred.user.uid)
-        const user={uuid:cred.user.uid, name: this.state.name, email: email}
+        const user={uuid:cred.user.uid, name: name , email: email, city:city}
 
        return Firebase.firestore()
         .collection('Users')
@@ -54,12 +56,20 @@ class Signup extends React.Component {
     name: "",
     email: "",
     password: "",
-    location:""
+    location:"",
+    city:""
+    ,
+    cities: [
+      { label: "Dublin", value: "Dublin" },
+      { label: "Dundalk", value: "Dundalk" },
+      { label: "Drogheda", value: "Drogheda" },
+    ],
   };
 
   render() {
     return (
-      <View style={styles.container}>
+      <ScrollView style={styles.containerStyle} >
+        <View style={styles.container}>
          <Image  style= {styles.imageContainer}source={require('./images/Untitled-8.png')}></Image>
         <Input
           value={this.state.name}
@@ -81,25 +91,30 @@ class Signup extends React.Component {
           secureTextEntry={true}
         />
 
-{/* <Picker
-                 selectedValue={this.state.filter}
-                     style={{ height: 50, width: 150 }}
-                     onValueChange={this.filter}
-                                              
-
-                         
-                         >
- 
-  <Picker.Item label="Dublin" value="Dublin" />
-  <Picker.Item label="Drogheda" value="Drogheda" />
-  <Picker.Item label="Dundalk" value="Dundalk" /> 
-
- </Picker> */}
+<DropDownPicker
+          placeholder="Select a City"
+            items={this.state.cities}
+            multiple={false}
+            min={0}
+            max={10}
+            style={styles.picker}
+            itemStyle={{
+              justifyContent: "flex-start",
+            }}
+            onChangeItem={(item) =>
+              this.setState({
+                city: item.value,               
+              })
+            }
+            containerStyle={{ width: 200, height: 70 }}
+            dropDownStyle={{ marginTop: 2 }}
+          />
 
         <Button title="Sign Up"onPress={this.handleSignUp}>
          
         </Button>
-      </View>
+        </View>
+      </ScrollView>
     );
   }
 }
@@ -107,7 +122,7 @@ class Signup extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
+    padding: 0,
     alignItems: "center",
     justifyContent: "center",
     flexDirection: "column"
@@ -115,6 +130,12 @@ const styles = StyleSheet.create({
   form: {
     flex: 1
   },
+  picker:{
+    alignSelf:'center',
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
+    borderBottomLeftRadius: 10,
+    borderBottomRightRadius: 10,},
   imageContainer: {
     width: '100%',
     height: 200

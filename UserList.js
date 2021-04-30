@@ -8,9 +8,9 @@ import {
   Text,
   View,
 } from 'react-native';
-import { getUsers} from './SkateSpotsApi';
+import { getUsers,getCityUsers} from './SkateSpotsApi';
 import { ListItem, Divider } from './node_modules/react-native-elements';
-import { TouchableHighlight } from 'react-native-gesture-handler';
+import DropDownPicker from 'react-native-dropdown-picker';
 
 class UserList extends Component {
   static navigationOptions = ({ navigation }) => {
@@ -24,7 +24,14 @@ class UserList extends Component {
 
   state = {
     userList: [],
-    selectedIndex: 0
+    selectedIndex: 0,
+    city:""
+    ,
+    cities: [
+      { label: "Dublin", value: "Dublin" },
+      { label: "Dundalk", value: "Dundalk" },
+      { label: "Drogheda", value: "Drogheda" },
+    ],
   }
 
  
@@ -44,6 +51,26 @@ class UserList extends Component {
   render() {
     return this.state.userList.length > 0 ?
       <SafeAreaView style={styles.container}>
+       <DropDownPicker
+          placeholder="Select a City"
+            items={this.state.cities}
+            multiple={false}
+            min={0}
+            max={10}
+            style={styles.picker}
+            itemStyle={{
+              justifyContent: "flex-start",
+            }}
+            onChangeItem={(item) =>{
+              this.setState({
+                city: item.value,               
+              })
+              getCityUsers(this.onUsersReceived, this.state.city)
+            }}
+            containerStyle={{ width: 200, height: 70 }}
+            dropDownStyle={{ marginTop: 2 }}
+          />
+
         <FlatList
           data={this.state.userList}
           ItemSeparatorComponent={() => <Divider style={{ backgroundColor: 'black' }} />}
