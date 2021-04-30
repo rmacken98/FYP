@@ -59,7 +59,6 @@ export default class EditScreen extends Component {
         spot={this.state.spot}
         onSpotAdded={this.props.navigation.getParam('spotAddedCallback')}
         onSpotUpdated={this.onSpotUpdated}
-        // return = {this.props.navigation.navigate('SkateSpots')}
       />
 
 </View>

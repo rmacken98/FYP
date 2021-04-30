@@ -24,7 +24,7 @@ import {
    
    const k = props.setLongitude
    const x = props.setLatitude
-   const user = Firebase.auth().currentUser.email
+   const user = Firebase.auth().currentUser.uid
   
   return (
       <View style={styles.container}>
@@ -42,20 +42,18 @@ import {
       style={styles.formInput}
       placeholder='Longitude'
        value =  {`${props.setLongitude}`}
-      // onChangeText = {text => { props.setFieldValue('longitude', k) }}
       />
       <Text>{props.errors.longitude}</Text>
       <TextInput
        style={styles.formInput}
       placeholder='Latitiude'
        value = {`${props.setLatitude}`}
-      // onChangeText = {text => { props.setFieldValue('latitude', x) }}
       />
         <Text>{props.errors.latitude}</Text>
        
   <Button
   onPress={props.handleSubmit}
-  title={"uPLOAD"}
+  title={"Submit"}
   >
  
   </Button>
@@ -121,20 +119,13 @@ import {
       handleSubmit: (values, {props}) => {
           if(props.spot.id){
           values.id = props.spot.id;
-         // values.latitude= 88
-          // values.latitude= props.setLatitude;
-          // values.longitude= props.setLongitude;
+       
           values.createdAt = props.spot.createdAt;
           values.image= props.spot.image;
           uploadSpot(values, props.onSpotUpdated, {updating: true})
           
   
           
-      }
-      else {
-       
-          //uploadSpot(values, props.onSpotUpdated, {updating: false})
-  
       }
       },
   })(EditForm);

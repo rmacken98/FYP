@@ -28,9 +28,7 @@ const LoginStack = createStackNavigator({
  
    
    
-//   SpotFormScreen: SpotFormScreen,
-//  EditScreen: EditScreen,
-//   SpotForm: SpotForm
+
  Login: Login,
  SignUp: SignUp,
  

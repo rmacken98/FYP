@@ -10,9 +10,7 @@ Alert
 import Firebase from "./config/Firebase";
 import { Input } from "./components/input";
 import { Button } from "./components/Button";
-// import { createAppContainer } from 'react-navigation';
-// import { createStackNavigator } from 'react-navigation-stack';
-//import SignUp from './SignUp';
+
 class Login extends React.Component {
 
       _SignUp = () => {
@@ -60,13 +58,13 @@ class Login extends React.Component {
           placeholder="Password"
           secureTextEntry={true}
         />
-        <Button onPress={this.handleLogin}>
-          <Text>Login</Text>
-        </Button>
+        <Button onPress={this.handleLogin} title="Login"/>
+          
         <Button
          onPress={this._SignUp}
-        ><Text>Don't have an account yet? Sign up</Text>
-        </Button>
+         title="Don't have an account yet?"
+         subTitle="Sign up"
+        />
 
       </View>
     );
