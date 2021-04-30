@@ -3,37 +3,33 @@ import {
   View,
   TextInput,
   Text,
+  Button
 } from 'react-native';
-import {Button} from './components/Button';
-import React from './node_modules/react';
-import {withFormik} from './node_modules/formik';
-import * as yup from './node_modules/yup';
-import { addSpot, updateSpot, uploadSpot } from './SkateSpotsApi';
-import Firebase from './config/Firebase';
+import React from 'react';
+import {withFormik} from 'formik';
+import * as yup from 'yup';
+import { uploadSpot } from './SkateSpotsApi'
 import MyImagePicker from './components/myImagePicker';
-
-
+import Firebase from './config/Firebase';
 
 
 const SpotForm = ( props)=> {
 
-  
-
-    setSpotImage = (image) => {
-        props.setFieldValue('imageUri', image.uri);
-      }
+    
     // const spot = Spot context
     // const k = spot.newMarker.longitude
     //const x = spot.marker.latitude
  const k = props.setLongitude
  const x = props.setLatitude
  const user = Firebase.auth().currentUser.email
-
+ 
 return (
-    <View style={styles.container}>
-         <MyImagePicker image={props.spot.image} onImagePicked={setSpotImage}  />
+    <View>
+         <MyImagePicker image={props.spot.image} onImagePicked={(image) => {
+        props.setFieldValue('imageUri', image.uri);
+      }}  />
     <TextInput
-    style={styles.formInput}
+    
     placeholder='Spot name'
    
     onChangeText = {text => { props.setFieldValue('name', text);  props.setFieldValue('longitude', k); props.setFieldValue('latitude', x), props.setFieldValue('createdBy',user) }}
@@ -41,14 +37,14 @@ return (
 
     <Text>{props.errors.name}</Text>
       <TextInput
-    style={styles.formInput}
+    
     placeholder='Longitude'
      value =  {`${props.setLongitude}`}
     // onChangeText = {text => { props.setFieldValue('longitude', k) }}
     />
     <Text>{props.errors.longitude}</Text>
     <TextInput
-     style={styles.formInput}
+   
     placeholder='Latitiude'
      value = {`${props.setLatitude}`}
     // onChangeText = {text => { props.setFieldValue('latitude', x) }}
@@ -56,18 +52,17 @@ return (
       <Text>{props.errors.latitude}</Text>
      
 <Button
-onPress={props.handleSubmit}
->
-<Text>Upload</Text>
-</Button>
-
-
+title='Submit'
+onPress={() => props.handleSubmit()}
+/>
 
     </View>
     
 
 )
 }
+
+
 
 const styles = StyleSheet.create({
   container: {
@@ -104,12 +99,10 @@ const styles = StyleSheet.create({
       padding: 8
     },
 });
-
 export default withFormik({
-    mapPropsToValues: ()=>({name:'',
-    createdBy:'',
-     longitude:0,
-     latitude:0,
+    mapPropsToValues: ({spot})=>({name:spot.name,
+     longitude:spot.longitude,
+     latitude:spot.latitude,
      imageUri: null
     
     }),
@@ -128,7 +121,6 @@ export default withFormik({
         values.createdAt = props.spot.createdAt;
         values.image= props.spot.image;
         uploadSpot(values, props.onSpotUpdated, {updating: true})
-        
 
         
     }
@@ -139,5 +131,3 @@ export default withFormik({
     }
     },
 })(SpotForm);
-
-

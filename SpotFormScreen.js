@@ -1,12 +1,5 @@
-import React, { Component } from './node_modules/react';
-import {
-  StyleSheet,
-  View,
-  TextInput,
-  Text,
-} from 'react-native';
+import React, { Component } from 'react';
 import SpotForm from './SpotForm';
-import {Button} from './components/Button';
 
 export default class SpotFormScreen extends Component {
 
@@ -30,12 +23,15 @@ export default class SpotFormScreen extends Component {
 
   componentDidMount() {
     const currentSpot = this.props.navigation.getParam('spot');
-    // const longitude = this.props.navigation.getParam('longitude');
-    // const latitude = this.props.navigation.getParam('latitude');
+    console.log(currentSpot);
+    const longitude = this.props.navigation.getParam('longitude');
+    const latitude = this.props.navigation.getParam('longitude');
 
     
-    
+    if (currentSpot){
      
+      this.setState(prevState => ({ spot: prevState.spot = currentSpot }))
+    }
     
   }
 
@@ -49,23 +45,16 @@ export default class SpotFormScreen extends Component {
   render() {
     console.log(this.props.navigation.getParam('longitude'))
     return (
-  <View>
+  
       <SpotForm
-      setLongitude={this.props.navigation.getParam('longitude')}
-      setLatitude={this.props.navigation.getParam('latitude')}
+      setLongitude={this.state.spot.longitude}
+      setLatitude={this.state.spot.latitude}
       
       
         spot={this.state.spot}
         onSpotAdded={this.props.navigation.getParam('spotAddedCallback')}
         onSpotUpdated={this.onSpotUpdated}
-        // return = {this.props.navigation.navigate('SkateSpots')}
       />
-      <Button
-onPress={() => this.props.navigation.navigate('SkateSpots')}
->
-<Text>Return</Text>
-</Button>
-</View>
     );
   }
 }
