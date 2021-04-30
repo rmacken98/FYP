@@ -34,11 +34,11 @@ export const sendTrickData = (tricks) =>{
  
  
     Firebase.firestore()
-    .collection('SkateSpots')
+    .collection('Tricks')
     .add(tricks)
     .then((snapshot)=>{
       tricks.id = snapshot.id;
-      snapshot.set(spot);
+      snapshot.set(tricks);
     }).then(()=> addComplete(tricks))
     .catch((error) => console.log(error));
   }
@@ -141,17 +141,25 @@ export async function getMyMessages(messagesRetrieved,chatID){
 
 }
 
-
+export async function getCityUsers(usersRetrieved,city){
+  var Users=[];
+  
+  var snapshot = await Firebase.firestore()
+  .collection('Users')
+  .where('city', '==',city)
+  .get()
+  snapshot.forEach((doc) => {
+  const user = doc.data();
+  user.id = doc.id;
+  Users.push(user);
+  
+  })}
 export async function getUsers(usersRetrieved){
 var Users=[];
 
 var snapshot = await Firebase.firestore()
 .collection('Users')
-
-
 .get()
-
-
 snapshot.forEach((doc) => {
 const user = doc.data();
 user.id = doc.id;
@@ -165,7 +173,6 @@ export async function getMessages(messagesRetrieved){
 
   var snapshot = await Firebase.firestore()
     .collection('Messages')
-   // .where('createdBy', '==',Firebase.auth().currentUser.email)
 
     .get()
     
