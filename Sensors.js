@@ -149,7 +149,7 @@ var percentage = this.state.xAccelerationDuring/100*74;
   }
 
 console.log("X Before trick:"+ this.state.xAccelerationDuring)
-  console.log("77% of x before : "+percentage);
+  console.log("74% of x before : "+percentage);
   
   console.log("X after 2s Second :",xSpeed);
   if(xSpeed>percentage)
@@ -201,7 +201,11 @@ setTimeout(()=> this.setState(
 }
         
 
+filter = (itemValue, itemIndex) =>{
 
+  this.setState({TrickType: itemValue});
+
+}
 
 DeviceMotionSub = () => {
   this.d_sub = DeviceMotion.addListener((DeviceData) => {

@@ -30,8 +30,6 @@ export async function getTricks(tricksRetrieved,user){
 }
 
 export const sendTrickData = (tricks) =>{
-
- 
  
     Firebase.firestore()
     .collection('Tricks')
@@ -152,8 +150,12 @@ export async function getCityUsers(usersRetrieved,city){
   const user = doc.data();
   user.id = doc.id;
   Users.push(user);
+  usersRetrieved(Users);
   
-  })}
+  })
+
+
+}
 export async function getUsers(usersRetrieved){
 var Users=[];
 

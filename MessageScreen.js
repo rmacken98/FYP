@@ -103,10 +103,11 @@ export default class MessageScreen extends React.Component {
 
     getMyMessages(this.onMessageRecieved, c);
     this.setState((prevState) => ({ c: (prevState.c = c) }));
+    setInterval(getMyMessages(this.onMessageRecieved, c), 3000);
+
   }
 
   render() {
-    setInterval(getMyMessages(this.onMessageRecieved, c), 3000);
 
     const chat = (
       <GiftedChat
