@@ -29,7 +29,7 @@ export async function getTricks(tricksRetrieved,user){
 
 }
 
-export const sendTrickData = (tricks) =>{
+export function sendTrickData(tricks){
  
     Firebase.firestore()
     .collection('Tricks')

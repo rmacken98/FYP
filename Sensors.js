@@ -8,7 +8,8 @@ import {
   Text,
   View,Picker,
   ScrollView, 
-  Dimensions
+  Dimensions,
+  Alert
 } from 'react-native';
 import { sendTrickData} from './SkateSpotsApi';
 import {
@@ -32,7 +33,6 @@ class Sensors extends Component {
   state = {
     screenWidth : Dimensions.get("window").width,
     start:false,
-      handRaised: false,
       DeviceData:[], 
       Date:"",
       TrickType:'',
@@ -49,7 +49,6 @@ class Sensors extends Component {
     
       flightTime:0.0,
       filter:'',
-      landed:false,
      
       wait:false,
  
@@ -65,7 +64,17 @@ class Sensors extends Component {
       started:false,
    
     }
-    
+    clearSession =  () =>{
+      this.setState(prevState => ({
+     
+     
+        trickAttempt: 0,
+          trickCount: 0,
+          fails:0,
+          streak:0
+        }));  
+    }
+
 
 detectTrick= async () =>{
 
@@ -119,7 +128,6 @@ console.log('------------------------');
   }
 
    
-
   
   } 
  
@@ -184,7 +192,7 @@ console.log("X Before trick:"+ this.state.xAccelerationDuring)
   console.log('------------------------');
   this.setState(prevState => ({
     trickAttempt: prevState.trickAttempt+1,
-    fail: prevState.fails+1,
+    fails: prevState.fails+1,
     streak: 0      
 }))
 }
@@ -199,13 +207,54 @@ setTimeout(()=> this.setState(
 
 
 }
-        
+     
+  filter = (itemValue, itemIndex) => {
+    this.setState({ filter: itemValue });
 
-filter = (itemValue, itemIndex) =>{
+    if (this.state.filter!='def'|| this.state.filter!=''){
+        Alert.alert(
+          "",
+          "Alert",
+          [
+            {
+              text: "Save Session?",
+              onPress: this.onSubmit,
+            },{
+              text: "Cancel",
+              onPress:this.clearSession,
+              style: "cancel",
+            },          
+          ],
+          { cancelable: false }
+        )
+        this.setState({TrickType: itemValue});
 
-  this.setState({TrickType: itemValue});
+      }
+    
+  };   
 
-}
+// filter = (itemValue, itemIndex) =>{
+//   this.setState({filter: itemValue});
+//   if (this.state.filter!=''){
+//   Alert.alert(
+//     "",
+//     "Alert",
+//     [
+//       {
+//         text: "Save Session?",
+//         onPress: () => {this.onSubmit},
+//       },{
+//         text: "Cancel",
+//         onPress: () => { this.clearSession},
+//         style: "cancel",
+//       },          
+//     ],
+//     { cancelable: false }
+//   )}
+
+//   this.setState({TrickType: itemValue});
+
+// }
 
 DeviceMotionSub = () => {
   this.d_sub = DeviceMotion.addListener((DeviceData) => {
@@ -238,10 +287,11 @@ onSubmit = ()=>
 var time = new Date();
 this.setState(
   { started:false})
-  this.setState({Date:time.toLocaleString('en-GB', { timeZone: 'UTC' })})
-  const session= {uid: Firebase.auth().currentUser.uid,TrickType:this.state.TrickType, Lands:this.state.landed,
-     Fails:this.state.fails, streak: this.state.Streak, Date:this.state.Date}
-  sendTrickData(session);      
+ // this.setState({Date:time.toLocaleString('en-GB', { timeZone: 'UTC' })})
+  const session= {uid: Firebase.auth().currentUser.uid,TrickType:this.state.TrickType, Attempts: this.state.trickAttempt,Lands:this.state.trickCount,
+     Fails:this.state.fails, Date:time.toLocaleString('en-GB', { timeZone: 'UTC' })}
+  sendTrickData(session);    
+  this.clearSession(); 
       
 }
 
@@ -294,14 +344,15 @@ this.setState(
   
 
   <Picker
-                   selectedValue={this.state.filter}
-                       style={{ height: 50, width: 150 }}
-                       onValueChange={this.filter}
+                    selectedValue={this.state.filter}
+                style={{ height: 50, width: 150 }}
+                onValueChange={this.filter}
+        
                                                 
   
                            
                            >
-   
+     <Picker.Item label='Select a trick' value='def' />
     <Picker.Item label="Ollie" value="Ollie" />
     <Picker.Item label="Kickflip" value="Kickflip" />
     <Picker.Item label="Heelflip" value="Heelflip" /> 
