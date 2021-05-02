@@ -59,7 +59,7 @@ class Skatespots extends React.Component {
     locationResult: {},
     filter: "",
     markers: [],
-
+    directions:true,
     ovSpeed: 0.0,
     coordinates: [],
     newMarkers: [],
@@ -231,24 +231,12 @@ class Skatespots extends React.Component {
         "",
         "Alert",
         [
-          {
-            text: "Edit Spot",
-            onPress: () =>
-              this.props.navigation.navigate("EditScreen", {
-                spot: {
-                  id: marker.id,
-                  name: marker.name,
-                  longitude: marker.longitude,
-                  latitude: marker.latitude,
-                },
-                longitude: marker.longitude,
-                latitude: marker.latitude,
-              }),
-          },
+        
           {
             text: "Get directions",
             onPress: () => this.onMarkerPressed(marker, index),
           },
+
           {
             text: "Get Weather",
             onPress: () => {
@@ -294,7 +282,9 @@ class Skatespots extends React.Component {
           },
           {
             text: "Delete Spot",
-            onPress: () => {deleteSpot(marker), getSpots(this.onSpotsRecieved)},
+            onPress: () => {deleteSpot(marker), getSpots(this.onSpotsRecieved).then(() => {
+              this.forceUpdate();
+          });},
           },
 
           {
@@ -362,14 +352,19 @@ class Skatespots extends React.Component {
     );
   };
 
+
+
   async getDirections(startLoc, destinationLoc) {
+    
     try {
       let resp = await fetch(
         `https://maps.googleapis.com/maps/api/directions/json?origin=${startLoc}&destination=${destinationLoc}&key=AIzaSyCOVmY_-JN6AY1x5a80rXwTHgLXWtUdf5E`
       );
+      
 
       let respJson = await resp.json();
       console.log(respJson);
+      if(this.state.getDirections){
       let distance = respJson.routes[0].legs[0].distance.value;
       let points = Polyline.decode(respJson.routes[0].overview_polyline.points);
       let coords = points.map((point, index) => {
@@ -443,10 +438,17 @@ if(this.state.Avgspeed.length>1){
 
         return coords;
       }
+    }
+      else{
+        Polyline.removeClippedSubviews(respJson.routes[0].overview_polyline.points);
+      }
     } catch (error) {
       alert(error);
       return error;
-    }
+    
+  }
+ 
+  
   }
 
   render() {
@@ -549,7 +551,7 @@ if(this.state.Avgspeed.length>1){
                 >
                   <Card
                     containerStyle={
-                      (styles.forcard, (opacity = this.state.opacity))
+                      (styles.forcard)
                     }
                   >
                     <Text style={styles.notes}>{this.state.location}</Text>

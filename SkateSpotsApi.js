@@ -63,19 +63,21 @@ export const send  =messages => {
   })
 }
 export async function updateSpot(spot) {
-  if(spot.image===null){
-  var snapshot = await Firebase.firestore()
-  .collection('SkateSpots')
-  .doc(spot.id).update({
-    name:spot.name
-  })}
-  else{
+  if(spot.image){
     var snapshot = await Firebase.firestore()
     .collection('SkateSpots')
     .doc(spot.id).update({
       name:spot.name,
       image:spot.image
   })}
+  else{
+  var snapshot = await Firebase.firestore()
+  .collection('SkateSpots')
+  .doc(spot.id).update({
+    name:spot.name
+  })}
+ 
+   
 
 console.log(spot.name);
 
@@ -250,7 +252,7 @@ export async function uploadSpot(spot, onSpotUploaded, {updating}){
   });
 }
  else {
-
+  delete spot.image;
     delete spot.imageUri;
 
     if (updating) {

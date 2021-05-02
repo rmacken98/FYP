@@ -174,7 +174,8 @@ console.log("X Before trick:"+ this.state.xAccelerationDuring)
      
         trickAttempt: prevState.trickAttempt+1,
           trickCount: prevState.trickCount+1,
-          streak: prevState.streak+1
+          streak: prevState.streak+1,
+          started: false
         }));  
       
     
@@ -193,16 +194,15 @@ console.log("X Before trick:"+ this.state.xAccelerationDuring)
   this.setState(prevState => ({
     trickAttempt: prevState.trickAttempt+1,
     fails: prevState.fails+1,
-    streak: 0      
+    streak: 0,      
+    started: false
 }))
 }
-this.setState(
-  { started:false,
-   })
+
 
 setTimeout(()=> this.setState(
   { started:true,
-    start:true}
+   }
 ),3000)
 
 
@@ -211,7 +211,7 @@ setTimeout(()=> this.setState(
   filter = (itemValue, itemIndex) => {
     this.setState({ filter: itemValue });
 
-    if (this.state.filter!='def'|| this.state.filter!=''){
+    if (this.state.filter!='def'|| this.state.filter!='' && this.state.started===true){
         Alert.alert(
           "",
           "Alert",
@@ -233,28 +233,7 @@ setTimeout(()=> this.setState(
     
   };   
 
-// filter = (itemValue, itemIndex) =>{
-//   this.setState({filter: itemValue});
-//   if (this.state.filter!=''){
-//   Alert.alert(
-//     "",
-//     "Alert",
-//     [
-//       {
-//         text: "Save Session?",
-//         onPress: () => {this.onSubmit},
-//       },{
-//         text: "Cancel",
-//         onPress: () => { this.clearSession},
-//         style: "cancel",
-//       },          
-//     ],
-//     { cancelable: false }
-//   )}
 
-//   this.setState({TrickType: itemValue});
-
-// }
 
 DeviceMotionSub = () => {
   this.d_sub = DeviceMotion.addListener((DeviceData) => {
