@@ -29,7 +29,9 @@ export default class MessageScreen extends React.Component {
   };
 
   onMessageRecieved = (messages) => {
-
+    messages.sort(function(a,b){
+     return new Date(b.createdAt) - new Date(a.createdAt);
+    });
     this.setState((prevState) => ({
       messages: (prevState.messages = messages),
     }));
@@ -103,7 +105,6 @@ export default class MessageScreen extends React.Component {
 
     getMyMessages(this.onMessageRecieved, c);
     this.setState((prevState) => ({ c: (prevState.c = c) }));
-    setInterval(getMyMessages(this.onMessageRecieved, c), 3000);
 
   }
 
