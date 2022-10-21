@@ -42,7 +42,7 @@
     "react-native-material-dropdown": "^0.11.1",
     "react-native-permissions": "^2.0.9",
     "react-native-ratings": "^6.5.0",
-    "react-native-reanimated": "~1.13.0",
+    "react-native-reanimated": "~2.10.0",
     "react-native-screens": "~2.10.1",
     "react-native-snap-carousel": "^3.8.4",
     "react-native-svg": "^12.1.0",
